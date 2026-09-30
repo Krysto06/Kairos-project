@@ -1,0 +1,614 @@
+<title>Suivre sa vie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: journal de vie en onglets — une couleur pastel par domaine de vie, fond porcelaine aéré, chemins d'étapes verticaux. */
+:root{
+  --bg:#F6F7FB; --surface:#FFFFFF; --ink:#1B2030; --muted:#646B80; --line:#E3E6EF; --soft:#EEF0F6;
+  --me:#E3F3F5; --me-ink:#0E6F7D;
+  --edu:#DCEAFE; --edu-ink:#1F5FB8;
+  --fin:#D8F2E4; --fin-ink:#17774A;
+  --sk:#EAE2FD; --sk-ink:#6A43C2;
+  --sty:#FCE3EA; --sty-ink:#B2385B;
+  --pro:#FFF0C7; --pro-ink:#8A6200;
+  --gold:#C99A2E; --warn:#C2410C; --good:#17774A;
+  --btn:#1B2030; --btn-ink:#FFFFFF;
+  --shadow:0 1px 2px rgba(27,32,48,.05),0 8px 24px -12px rgba(27,32,48,.12);
+  --display:'Bricolage Grotesque',ui-sans-serif,system-ui,sans-serif;
+  --body:'Figtree',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12141B; --surface:#1A1D26; --ink:#ECEEF5; --muted:#9AA0B4; --line:#2A2E3A; --soft:#22252F;
+  --me:#15302F; --me-ink:#7FD3DE; --edu:#1C2A42; --edu-ink:#8DB8FF; --fin:#16322A; --fin-ink:#7DDBA8;
+  --sk:#2A2342; --sk-ink:#C3A8FF; --sty:#3A1F29; --sty-ink:#FF9DB8; --pro:#3A3016; --pro-ink:#F1C55B;
+  --gold:#E3B94F; --warn:#FB923C; --good:#7DDBA8; --btn:#ECEEF5; --btn-ink:#12141B;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.5); color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#12141B; --surface:#1A1D26; --ink:#ECEEF5; --muted:#9AA0B4; --line:#2A2E3A; --soft:#22252F;
+  --me:#15302F; --me-ink:#7FD3DE; --edu:#1C2A42; --edu-ink:#8DB8FF; --fin:#16322A; --fin-ink:#7DDBA8;
+  --sk:#2A2342; --sk-ink:#C3A8FF; --sty:#3A1F29; --sty-ink:#FF9DB8; --pro:#3A3016; --pro-ink:#F1C55B;
+  --gold:#E3B94F; --warn:#FB923C; --good:#7DDBA8; --btn:#ECEEF5; --btn-ink:#12141B;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.5); color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--edu-ink);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:20px;padding-block:20px 64px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;letter-spacing:-.01em}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)}
+
+/* Header */
+header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.brand h1{font-size:clamp(30px,5vw,44px);font-weight:800;line-height:1.05}
+.brand h1 em{font-style:normal;background:linear-gradient(transparent 62%,var(--sty) 62%);padding:0 .08em}
+.brand p{margin:6px 0 0;color:var(--muted)}
+.save{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);background:var(--surface);border:1px solid var(--line);padding:6px 12px;border-radius:999px}
+.save i{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.save[data-s="saved"] i{background:var(--good)} .save[data-s="saving"] i{background:var(--gold)} .save[data-s="error"] i{background:var(--warn)}
+
+/* Nav */
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px;margin-bottom:20px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);padding:9px 16px;border-radius:999px;cursor:pointer;font-weight:600;font-size:14px;transition:background .2s,border-color .2s}
+.tab i{width:9px;height:9px;border-radius:50%;background:var(--c-ink)}
+.tab:hover{border-color:var(--c-ink)}
+.tab[aria-selected="true"]{background:var(--c);border-color:transparent;color:var(--c-ink)}
+[data-c="me"]{--c:var(--me);--c-ink:var(--me-ink)} [data-c="edu"]{--c:var(--edu);--c-ink:var(--edu-ink)}
+[data-c="fin"]{--c:var(--fin);--c-ink:var(--fin-ink)} [data-c="sk"]{--c:var(--sk);--c-ink:var(--sk-ink)}
+[data-c="sty"]{--c:var(--sty);--c-ink:var(--sty-ink)} [data-c="pro"]{--c:var(--pro);--c-ink:var(--pro-ink)}
+
+section.view{animation:rise .35s ease both}
+@keyframes rise{from{transform:translateY(6px);opacity:.4}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){section.view{animation:none}*{transition:none!important}}
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.sec-head h2{font-size:clamp(24px,3.6vw,32px);font-weight:800}
+.sec-head p{margin:4px 0 0;color:var(--muted);max-width:60ch}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow);min-width:0}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
+.g3{grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr))}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--btn);color:var(--btn-ink);padding:9px 16px;border-radius:12px;font-weight:600;font-size:14px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--ink)}
+.btn.sm{padding:6px 11px;font-size:13px;border-radius:10px}
+.btn.danger{background:transparent;border:1px solid var(--line);color:var(--warn)}
+.field{display:grid;gap:4px;min-width:0}
+.field label{font-size:12px;font-weight:600;color:var(--muted)}
+.in{width:100%;background:var(--soft);border:1px solid transparent;border-radius:10px;padding:9px 12px;min-width:0}
+.in:focus{outline:none;border-color:var(--c-ink,var(--edu-ink));background:var(--surface)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--c);color:var(--c-ink);white-space:nowrap}
+.bar{height:8px;border-radius:99px;background:var(--soft);overflow:hidden}
+.bar>b{display:block;height:100%;border-radius:99px;background:var(--c-ink);transition:width .5s ease}
+.links{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.links a{font-size:12.5px;font-weight:600;text-decoration:none;padding:4px 10px;border-radius:8px;background:var(--soft);color:var(--ink);border:1px solid transparent}
+.links a:hover{border-color:var(--c-ink,var(--ink))}
+.links a::after{content:" ↗";color:var(--muted)}
+
+/* Moi */
+.profile{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:start;background:var(--me);border:0}
+.mono{width:92px;height:92px;border-radius:28px;background:var(--surface);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:44px;color:var(--me-ink);transform:rotate(-4deg)}
+.profile h3{font-size:clamp(28px,4.5vw,40px);font-weight:800;line-height:1.05}
+.profile .head{color:var(--me-ink);font-weight:600;margin-top:4px}
+.facts{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:16px}
+.fact{background:var(--surface);border-radius:12px;padding:10px 12px;min-width:0}
+.fact .v{font-weight:600;overflow-wrap:anywhere}
+.fact .v.empty{color:var(--muted);font-weight:400;font-style:italic}
+.motto{margin-top:14px;font-family:var(--display);font-size:18px;color:var(--me-ink)}
+.edit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:10px;margin-top:14px}
+@media (max-width:560px){.profile{grid-template-columns:1fr}.mono{width:72px;height:72px;font-size:34px;border-radius:22px}}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,160px),1fr));gap:12px}
+.tile{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;cursor:pointer;text-align:left}
+.tile:hover{border-color:var(--c-ink)}
+.tile .t{font-size:12.5px;color:var(--muted);font-weight:600}
+.tile .v{font-family:var(--display);font-size:20px;font-weight:800}
+.ring{flex:none}
+.next{display:flex;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line);cursor:pointer;background:none;border-left:0;border-right:0;border-bottom:0;width:100%;text-align:left}
+.next:first-of-type{border-top:0}
+.next .dot{width:34px;height:34px;flex:none;border-radius:11px;background:var(--c);color:var(--c-ink);display:grid;place-items:center;font-weight:800;font-size:12px;font-family:var(--mono)}
+.next .go{margin-left:auto;color:var(--muted)}
+
+/* Éducation */
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 14px;cursor:pointer;text-align:left;min-width:0}
+.chip b{display:block;font-family:var(--display);font-size:16px}
+.chip span{font-size:12.5px;color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--edu);border-color:transparent}
+.chip[aria-pressed="true"] b{color:var(--edu-ink)}
+.track-head{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.track-head h3{font-size:24px;font-weight:800}
+.track-head .bar{flex:1;min-width:140px}
+ol.path{list-style:none;margin:18px 0 0;padding:0;position:relative}
+ol.path::before{content:"";position:absolute;left:19px;top:10px;bottom:10px;width:2px;background:repeating-linear-gradient(var(--line) 0 6px,transparent 6px 11px)}
+.step{position:relative;display:grid;grid-template-columns:40px 1fr;gap:14px;padding-bottom:18px}
+.node{width:40px;height:40px;border-radius:50%;border:2px solid var(--line);background:var(--surface);display:grid;place-items:center;cursor:pointer;position:relative;z-index:1;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--muted);transition:transform .15s}
+.node:hover{transform:scale(1.07);border-color:var(--edu-ink)}
+.step.done .node{background:var(--edu-ink);border-color:var(--edu-ink);color:var(--surface)}
+.step .body{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;min-width:0}
+.step.done .body{background:var(--soft)}
+.step.done .body h4{text-decoration:line-through;text-decoration-color:var(--muted)}
+.step h4{margin:0;font-size:15.5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.step p{margin:4px 0 0;color:var(--muted);font-size:14px}
+.badge{font-family:var(--mono);font-size:11px;font-weight:600;padding:2px 7px;border-radius:6px;background:var(--edu);color:var(--edu-ink)}
+.badge.exam{background:var(--pro);color:var(--pro-ink)}
+.badge.mine{background:var(--sk);color:var(--sk-ink)}
+.step.summit .node{width:40px;height:40px;border-color:var(--gold);color:var(--gold)}
+.step.summit.done .node{background:var(--gold);border-color:var(--gold);color:var(--surface)}
+.step.summit .body{border:1.5px solid var(--gold);background:linear-gradient(135deg,var(--pro),var(--surface) 70%)}
+.step.summit h4{font-family:var(--display);font-size:18px}
+.summit-tag{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:var(--pro-ink)}
+.del{margin-left:auto;background:none;border:0;color:var(--muted);cursor:pointer;font-size:13px}
+.del:hover{color:var(--warn)}
+.nextup{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--edu);border-radius:16px;padding:16px 18px;margin-top:4px}
+.nextup b{font-family:var(--display);font-size:18px;color:var(--edu-ink)}
+.addrow{display:grid;grid-template-columns:1.2fr 1fr auto;gap:8px;margin-top:14px}
+@media (max-width:620px){.addrow{grid-template-columns:1fr}}
+
+/* Finance */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;min-width:0}
+.kpi .v{font-family:var(--display);font-size:26px;font-weight:800;margin-top:2px}
+.kpi.hero{background:var(--fin);border:0}
+.kpi.hero .v{color:var(--fin-ink)}
+.kpi input{font-family:var(--display);font-size:26px;font-weight:800;color:var(--fin-ink);background:transparent;border:0;border-bottom:2px dashed var(--fin-ink);width:100%;padding:0}
+.kpi input:focus{outline:none;border-bottom-style:solid}
+.compare{display:grid;gap:14px}
+.crow{display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:center}
+.stack{display:flex;height:30px;border-radius:9px;overflow:hidden;background:var(--soft)}
+.stack>span{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;font-family:var(--mono);white-space:nowrap;overflow:hidden;transition:flex-basis .5s}
+.k-besoin{background:var(--edu);color:var(--edu-ink)} .k-envie{background:var(--sty);color:var(--sty-ink)} .k-epargne{background:var(--fin);color:var(--fin-ink)} .k-reste{background:transparent;color:var(--muted)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.lines{width:100%;border-collapse:collapse}
+.lines td{padding:6px 4px;border-top:1px solid var(--line);vertical-align:middle}
+.lines tr:first-child td{border-top:0}
+.lines .in{padding:7px 10px}
+.lines .amt{width:120px;text-align:right;font-family:var(--mono)}
+.lines .pct{width:52px;text-align:right;font-size:12.5px;color:var(--muted)}
+.lines select.in{width:128px}
+.tablewrap{overflow-x:auto}
+.note{font-size:13px;padding:10px 12px;border-radius:12px;background:var(--pro);color:var(--pro-ink);margin-bottom:14px}
+.insight{font-size:14px;margin:12px 0 0;padding-left:12px;border-left:3px solid var(--fin-ink)}
+
+/* Skills */
+.skill h3{font-size:20px;font-weight:800}
+.skill .top{display:flex;gap:14px;align-items:center;margin-bottom:12px}
+.mods{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.mod{display:flex;gap:10px;align-items:flex-start;padding:7px 8px;border-radius:10px;cursor:pointer}
+.mod:hover{background:var(--soft)}
+.mod input{appearance:none;width:20px;height:20px;flex:none;border:2px solid var(--line);border-radius:6px;margin:1px 0 0;cursor:pointer;display:grid;place-items:center;background:var(--surface)}
+.mod input:checked{background:var(--sk-ink);border-color:var(--sk-ink)}
+.mod input:checked::after{content:"";width:5px;height:10px;border:solid var(--surface);border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.mod input:checked + span{color:var(--muted);text-decoration:line-through}
+.mod small{display:block;color:var(--muted);font-size:12.5px;text-decoration:none}
+
+/* Style */
+.look{padding:0;overflow:hidden;display:flex;flex-direction:column}
+.outfit{display:grid;grid-template-columns:repeat(var(--n),1fr);height:120px}
+.outfit span{display:flex;align-items:flex-end;padding:8px;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.look .b{padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px;flex:1}
+.look h3{font-size:20px;font-weight:800;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.look ul{margin:0;padding-left:18px;font-size:14px}
+.look .tip{font-size:13.5px;color:var(--sty-ink);background:var(--sty);padding:8px 10px;border-radius:10px}
+.heart{background:none;border:1px solid var(--line);border-radius:999px;width:36px;height:36px;display:grid;place-items:center;cursor:pointer;flex:none}
+.heart svg{width:18px;height:18px;fill:none;stroke:var(--muted);stroke-width:2}
+.heart[aria-pressed="true"]{border-color:var(--sty-ink);background:var(--sty)}
+.heart[aria-pressed="true"] svg{fill:var(--sty-ink);stroke:var(--sty-ink)}
+.look .links{margin-top:auto}
+.capsule{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr));gap:8px;margin-top:12px}
+.capsule label{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;border:1px solid var(--line);cursor:pointer;font-size:14px}
+.capsule input{accent-color:var(--sty-ink);width:17px;height:17px}
+.capsule label:has(input:checked){background:var(--sty);border-color:transparent;color:var(--sty-ink);font-weight:600}
+
+/* Projets */
+.proj{display:flex;flex-direction:column;gap:10px}
+.proj h3{font-size:19px;font-weight:800;overflow-wrap:anywhere}
+.proj .meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.proj .nx{font-size:14px}
+.proj .nx b{font-weight:600;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em;display:block}
+.proj .acts{display:flex;gap:8px;margin-top:auto;flex-wrap:wrap}
+.st-idee{--c:var(--soft);--c-ink:var(--muted)} .st-cours{--c:var(--edu);--c-ink:var(--edu-ink)} .st-pause{--c:var(--pro);--c-ink:var(--pro-ink)} .st-fini{--c:var(--fin);--c-ink:var(--fin-ink)}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.filters button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--pro);border-color:transparent;color:var(--pro-ink)}
+.empty{text-align:center;padding:36px 20px;color:var(--muted);border:1.5px dashed var(--line);border-radius:18px}
+footer{margin-top:40px;font-size:12.5px;color:var(--muted);text-align:center}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <p class="eyebrow" id="today"></p>
+      <h1>Suivre sa <em>vie</em></h1>
+      <p id="greet">Ton tableau de bord personnel : études, argent, compétences, style et projets.</p>
+    </div>
+    <span class="save" id="save" data-s="idle"><i></i><span>Chargement…</span></span>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button class="tab" role="tab" data-tab="moi" data-c="me"><i></i>Moi</button>
+    <button class="tab" role="tab" data-tab="education" data-c="edu"><i></i>Éducation</button>
+    <button class="tab" role="tab" data-tab="finance" data-c="fin"><i></i>Finance</button>
+    <button class="tab" role="tab" data-tab="skills" data-c="sk"><i></i>Skills</button>
+    <button class="tab" role="tab" data-tab="style" data-c="sty"><i></i>Style</button>
+    <button class="tab" role="tab" data-tab="projets" data-c="pro"><i></i>Projets</button>
+  </nav>
+
+  <main id="main"></main>
+  <footer>Suivre sa vie · tes coches et tes chiffres sont enregistrés automatiquement.</footer>
+</div>
+
+<script>
+/* ---------- Contenu ---------- */
+const TRACKS = [
+  { id:'en', title:'Anglais → C2', sub:'De A1 à C2, puis DET & TOEFL', desc:'Un niveau à la fois, avec un test gratuit à mi-chemin et les deux examens officiels comme sommet.',
+    steps:[
+      {id:'en-a1',lvl:'A1',t:'Découverte',d:'Se présenter, chiffres, vie quotidienne. 20 minutes par jour suffisent.',links:[['Duolingo','https://www.duolingo.com'],['BBC Learning English','https://www.bbc.co.uk/learningenglish']]},
+      {id:'en-a2',lvl:'A2',t:'Survie',d:'Présent, passé simple, petites conversations. Commencer un carnet de vocabulaire.',links:[['British Council – LearnEnglish','https://learnenglish.britishcouncil.org']]},
+      {id:'en-b1',lvl:'B1',t:'Autonomie',d:'Present perfect, conditionnel. Un podcast lent par jour, écrire 5 lignes par jour.',links:[['6 Minute English','https://www.bbc.co.uk/learningenglish/english/features/6-minute-english'],['Write & Improve (Cambridge)','https://writeandimprove.com']]},
+      {id:'en-t1',exam:true,t:'Test de niveau gratuit',d:'Mesurer ton niveau réel (score CECRL) avant d’attaquer le B2.',links:[['EF SET – gratuit','https://www.efset.org']]},
+      {id:'en-b2',lvl:'B2',t:'Indépendance',d:'Lire un article de The Economist par semaine, écrire des essais argumentés.',links:[['The Economist','https://www.economist.com'],['TED Talks','https://www.ted.com/talks']]},
+      {id:'en-c1',lvl:'C1',t:'Avancé',d:'Présenter un sujet économique à l’oral, rédiger un rapport structuré.',links:[['C1 Advanced','https://www.cambridgeenglish.org/exams-and-tests/advanced/'],['Coursera – anglais académique','https://www.coursera.org/search?query=academic%20english']]},
+      {id:'en-c2',lvl:'C2',t:'Maîtrise',d:'Nuances, idiomes, lecture de papiers académiques en économie.',links:[['C2 Proficiency','https://www.cambridgeenglish.org/exams-and-tests/proficiency/']]},
+      {id:'en-t2',exam:true,t:'Test blanc TOEFL & DET',d:'Un test blanc de chaque avant l’inscription officielle.',links:[['DET – pratique gratuite','https://englishtest.duolingo.com/prepare'],['TOEFL – préparation ETS','https://www.ets.org/toefl/test-takers/ibt/prepare.html']]},
+      {id:'en-det',summit:true,t:'Duolingo English Test',d:'En ligne, environ 1 h, score sur 160. Viser 125–135+ pour un master.',links:[['Site officiel DET','https://englishtest.duolingo.com']]},
+      {id:'en-toefl',summit:true,t:'TOEFL iBT',d:'Score sur 120. Beaucoup de masters demandent 90 à 100+.',links:[['ETS – TOEFL iBT','https://www.ets.org/toefl.html']]},
+    ]},
+  { id:'lic', title:'Licence en économie', sub:'L1 → soutenance', desc:'Les fondamentaux, ton ABC pour l’empire, puis la soutenance. Ensuite le parcours continue vers le master.', next:'gre',
+    steps:[
+      {id:'lic-l1',lvl:'L1',t:'Fondamentaux',d:'Microéconomie, macroéconomie, maths pour économistes, comptabilité.',links:[['Khan Academy – Micro','https://www.khanacademy.org/economics-finance-domain/microeconomics'],['Khan Academy – Macro','https://www.khanacademy.org/economics-finance-domain/macroeconomics']]},
+      {id:'lic-l2',lvl:'L2',t:'Outils quantitatifs',d:'Statistiques, probabilités, introduction à l’économétrie.',links:[['MIT OCW – Economics','https://ocw.mit.edu/search/?d=Economics'],['Marginal Revolution University','https://mru.org']]},
+      {id:'lic-l3',lvl:'L3',t:'Spécialisation',d:'Économétrie appliquée, économie internationale, finance, politique économique.',links:[['QuantEcon','https://quantecon.org'],['Banque mondiale – données','https://data.worldbank.org']]},
+      {id:'lic-abc',lvl:'ABC',t:'Mon ABC pour l’empire',d:'Ton artefact de référence A-B-C. Colle son lien ci-dessous pour l’ouvrir d’ici.',abc:true,links:[]},
+      {id:'lic-mem',lvl:'MÉM',t:'Mémoire',d:'Choisir un sujet, trouver des données, écrire la revue de littérature, les résultats, la conclusion.',links:[['Google Scholar','https://scholar.google.com'],['NBER Working Papers','https://www.nber.org/papers']]},
+      {id:'lic-prep',exam:true,t:'Répétition de la soutenance',d:'Slides en 12–15 minutes, deux répétitions chronométrées, liste des questions probables du jury.',links:[]},
+      {id:'lic-sout',summit:true,t:'Soutenance',d:'Le jour J. Après ça : le master.',links:[]},
+    ]},
+  { id:'gre', title:'Master & GRE', sub:'Préparer l’après-licence', desc:'Le GRE, le dossier, puis l’admission en master.',
+    steps:[
+      {id:'gre-list',lvl:'M0',t:'Choisir 5 à 8 masters',d:'Économie, économétrie ou finance quantitative. Noter pour chacun : scores exigés, dates limites, frais.',links:[['Mastersportal','https://www.mastersportal.com']]},
+      {id:'gre-diag',exam:true,t:'Diagnostic GRE',d:'Passer un test officiel gratuit pour connaître ton point de départ.',links:[['ETS POWERPREP (gratuit)','https://www.ets.org/gre/test-takers/general-test/prepare/powerprep.html']]},
+      {id:'gre-q',lvl:'Q',t:'Quantitative Reasoning',d:'Ton point fort d’économiste : viser 165+. Arithmétique, algèbre, stats, data interpretation.',links:[['Khan Academy – maths','https://www.khanacademy.org/math'],['Magoosh GRE','https://magoosh.com/gre/']]},
+      {id:'gre-v',lvl:'V',t:'Verbal Reasoning',d:'Vocabulaire (10 mots/jour), text completion, lecture rapide.',links:[['GregMat','https://www.gregmat.com'],['Vocabulary.com','https://www.vocabulary.com']]},
+      {id:'gre-w',lvl:'AW',t:'Analytical Writing',d:'Un essai « Analyze an Issue » par semaine, chronométré à 30 minutes.',links:[['ETS – pool de sujets','https://www.ets.org/gre/test-takers/general-test/prepare/content/analytical-writing.html']]},
+      {id:'gre-exam',exam:true,t:'GRE officiel',d:'S’inscrire 2 à 3 mois avant les premières dates limites.',links:[['S’inscrire au GRE','https://www.ets.org/gre.html']]},
+      {id:'gre-dos',lvl:'DOS',t:'Dossier de candidature',d:'Statement of purpose, CV académique, 2 à 3 lettres de recommandation, relevés de notes.',links:[]},
+      {id:'gre-adm',summit:true,t:'Admission en master',d:'Candidatures envoyées, puis la lettre d’admission.',links:[]},
+    ]},
+];
+
+const SKILLS = [
+  { id:'py', title:'Python pour la data', sub:'De zéro à l’économétrie en Python',
+    mods:[['Bases','variables, boucles, fonctions, listes'],['pandas','charger, nettoyer, fusionner des données'],['Visualisation','matplotlib, seaborn'],['Statistiques & économétrie','statsmodels : OLS, séries temporelles'],['Données publiques','APIs Banque mondiale, FRED, INSEE'],['Projet final','une analyse complète publiée sur GitHub']],
+    links:[['Kaggle Learn – Python','https://www.kaggle.com/learn/python'],['QuantEcon – Python','https://python-programming.quantecon.org'],['statsmodels','https://www.statsmodels.org']] },
+  { id:'cfa', title:'CFA Niveau I', sub:'Les 10 thèmes du programme',
+    mods:[['Ethical & Professional Standards',''],['Quantitative Methods',''],['Economics',''],['Financial Statement Analysis',''],['Corporate Issuers',''],['Equity Investments',''],['Fixed Income',''],['Derivatives',''],['Alternative Investments',''],['Portfolio Management','']],
+    links:[['CFA Institute – Level I','https://www.cfainstitute.org/programs/cfa-program'],['300 Hours – ressources','https://300hours.com']] },
+  { id:'sql', title:'SQL', sub:'Le langage des bases de données',
+    mods:[['SELECT, WHERE, ORDER BY',''],['JOIN',''],['GROUP BY & agrégats',''],['Window functions',''],['Projet : base de données économiques','']],
+    links:[['SQLBolt','https://sqlbolt.com'],['Mode SQL Tutorial','https://mode.com/sql-tutorial']] },
+];
+
+const LOOKS = [
+  { id:'cc', name:'Casual chic', vibe:'Décontracté mais pensé.', pal:[['#C19A6B','Blazer camel'],['#F4F1EA','T-shirt blanc'],['#2F3A56','Jean brut'],['#5A3A2E','Mocassins']],
+    pieces:['Blazer camel légèrement oversize','T-shirt blanc épais','Jean droit brut','Mocassins en cuir'], tip:'Retrousse les manches du blazer : le look paraît immédiatement plus détendu.', q:'casual chic outfit' },
+  { id:'sb', name:'Smart bureau', vibe:'Pour les entretiens, stages et soutenances.', pal:[['#2B3445','Pull marine'],['#BFD3EA','Chemise oxford'],['#8C8F96','Pantalon gris'],['#3B2A22','Derbies']],
+    pieces:['Chemise oxford bleu ciel','Pull mérinos col V marine','Pantalon à pinces gris','Derbies marron foncé'], tip:'Une seule couleur vive maximum. Le reste reste neutre.', q:'smart casual office outfit' },
+  { id:'mn', name:'Minimal neutre', vibe:'Des tons crème, beige et blanc.', pal:[['#EDE4D3','Col roulé crème'],['#CBB89A','Trench'],['#D9CFC0','Pantalon large'],['#FAFAFA','Sneakers blanches']],
+    pieces:['Pull col roulé crème','Trench beige','Pantalon large sable','Sneakers blanches minimalistes'], tip:'Joue sur les matières (maille, coton, cuir) plutôt que sur les couleurs.', q:'minimalist neutral outfit' },
+  { id:'lin', name:'Lin & sauge', vibe:'Frais et léger pour les jours chauds.', pal:[['#B7C4A8','Chemise lin sauge'],['#F7F5EF','Pantalon blanc'],['#D6B98C','Espadrilles'],['#C9A96E','Panier']],
+    pieces:['Chemise en lin vert sauge','Pantalon blanc fluide','Espadrilles ou sandales','Sac panier ou tote en toile'], tip:'Le lin froissé fait partie du charme, pas besoin de repasser.', q:'linen summer outfit sage' },
+  { id:'we', name:'Week-end urbain', vibe:'Confort sans négliger.', pal:[['#A7A9AC','Sweat gris chiné'],['#7A7454','Chino kaki'],['#F2F2F2','Sneakers'],['#1E1E1E','Casquette']],
+    pieces:['Sweat gris chiné','Chino kaki','Sneakers blanches','Tote bag en toile'], tip:'Un sweat bien coupé fait tout le travail : taille ajustée aux épaules.', q:'weekend street casual outfit' },
+  { id:'ev', name:'Soirée élégante', vibe:'Monochrome et sûr.', pal:[['#1A1A1A','Blazer noir'],['#262626','Haut noir'],['#111111','Pantalon noir'],['#C9A34E','Bijou doré']],
+    pieces:['Blazer structuré noir','Haut noir fluide','Pantalon noir droit','Un seul accessoire doré'], tip:'Total look noir + une touche dorée : simple, et ça marche partout.', q:'all black elegant evening outfit' },
+];
+const CAPSULE = ['Blazer bien coupé','Chemise blanche','T-shirts blanc & noir','Jean droit brut','Pantalon à pinces','Pull col roulé','Trench beige','Manteau long','Sneakers blanches','Mocassins','Sac en cuir','Montre simple'];
+
+const KINDS = {besoin:'Besoins',envie:'Envies',epargne:'Épargne & avenir'};
+const STATUS = {idee:'Idée',cours:'En cours',pause:'En pause',fini:'Terminé'};
+const DEFAULT = {
+  profile:{name:'Krystofia',headline:'',education:'',children:'',status:'',city:'',languages:'',motto:''},
+  done:[], custom:{}, abcLink:'', skillsDone:[], favs:[], capsule:[], projects:[],
+  budget:{salary:0,currency:'€',example:false,lines:[
+    {id:'l1',label:'Logement',kind:'besoin',amount:0},{id:'l2',label:'Alimentation',kind:'besoin',amount:0},
+    {id:'l3',label:'Transport',kind:'besoin',amount:0},{id:'l4',label:'Enfants & famille',kind:'besoin',amount:0},
+    {id:'l5',label:'Loisirs & sorties',kind:'envie',amount:0},{id:'l6',label:'Style & shopping',kind:'envie',amount:0},
+    {id:'l7',label:'Formations (CFA, TOEFL, GRE)',kind:'epargne',amount:0},{id:'l8',label:'Épargne de précaution',kind:'epargne',amount:0},
+    {id:'l9',label:'Investissement',kind:'epargne',amount:0}]}
+};
+
+/* ---------- Utilitaires ---------- */
+const clone = o => JSON.parse(JSON.stringify(o));
+const $ = s => document.querySelector(s);
+function h(tag, attrs, ...kids){
+  const el = document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs||{})){
+    if (v==null || v===false) continue;
+    if (k==='class') el.className=v;
+    else if (k==='style') el.style.cssText=v;
+    else if (k.startsWith('on')) el.addEventListener(k.slice(2),v);
+    else if (k==='html') el.innerHTML=v;
+    else el.setAttribute(k, v===true?'':v);
+  }
+  for (const c of kids.flat(9)){ if (c==null||c===false) continue; el.append(c.nodeType?c:document.createTextNode(String(c))); }
+  return el;
+}
+const uid = () => Math.random().toString(36).slice(2,9);
+const stable = v => Array.isArray(v) ? '['+v.map(stable).join(',')+']' : (v && typeof v==='object') ? '{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+stable(v[k])).join(',')+'}' : JSON.stringify(v);
+function lsGet(k){ try{ return localStorage.getItem(k) }catch(e){ return null } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v) }catch(e){} }
+function fmt(n){ const c=S.budget.currency; const s=new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0}).format(Math.round(n||0)); return c==='FCFA'||c==='HTG'||c==='CHF' ? s+' '+c : (c==='$'?'$'+s : s+' '+c) }
+function ring(p, color, size=46){
+  const r=(size-6)/2, C=2*Math.PI*r, off=C*(1-Math.max(0,Math.min(1,p)));
+  const ns='http://www.w3.org/2000/svg', svg=document.createElementNS(ns,'svg');
+  svg.setAttribute('width',size); svg.setAttribute('height',size); svg.setAttribute('class','ring'); svg.setAttribute('viewBox',`0 0 ${size} ${size}`);
+  svg.innerHTML=`<circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--soft)" stroke-width="5"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="5" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${off}" transform="rotate(-90 ${size/2} ${size/2})"/><text x="50%" y="50%" dy=".35em" text-anchor="middle" font-size="${size*.25}" font-family="JetBrains Mono,monospace" font-weight="600" fill="var(--ink)">${Math.round(p*100)}</text>`;
+  return svg;
+}
+
+/* ---------- État & sauvegarde ---------- */
+let S = clone(DEFAULT);
+let docRef = null, lastJSON = '', timer = null, writing = false, again = false, deferRender = false;
+const UI = { tab: 'moi', track: lsGet('ssv.track') || 'en', editProfile:false, editProj:null, filter:'all', confirm:null };
+
+function hydrate(d){
+  const b = Object.assign(clone(DEFAULT), d || {});
+  b.profile = Object.assign(clone(DEFAULT.profile), (d&&d.profile)||{});
+  b.budget = Object.assign(clone(DEFAULT.budget), (d&&d.budget)||{});
+  for (const k of ['done','skillsDone','favs','capsule','projects']) if (!Array.isArray(b[k])) b[k]=[];
+  if (!b.custom || typeof b.custom!=='object') b.custom={};
+  return b;
+}
+function setSave(s, txt){ const el=$('#save'); el.dataset.s=s; el.lastElementChild.textContent=txt; }
+function save(){ setSave('saving','Enregistrement…'); clearTimeout(timer); timer=setTimeout(flush, 600); lsSet('ssv.cache', JSON.stringify(S)); }
+async function flush(){
+  if (writing){ again=true; return; }
+  writing=true;
+  const snap = clone(S);
+  try{
+    if (docRef){ await docRef.set(snap); lastJSON = stable(snap); setSave('saved','Enregistré'); }
+    else setSave('idle','Enregistré sur cet appareil');
+  }catch(e){ setSave('error','Échec de l’enregistrement, nouvel essai à la prochaine modification'); }
+  writing=false;
+  if (again){ again=false; flush(); }
+}
+const typing = () => { const a=document.activeElement; return a && $('#main').contains(a) && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && a.type!=='checkbox'; };
+document.addEventListener('focusout', () => setTimeout(()=>{ if (deferRender && !typing()){ deferRender=false; render(); } }, 0));
+
+/* ---------- Progression ---------- */
+function trackSteps(tr){
+  const custom = (S.custom[tr.id]||[]).map(c=>({id:c.id,t:c.t,d:c.d||'',links:c.url?[['Ouvrir le lien',c.url]]:[],mine:true}));
+  const i = tr.steps.findIndex(s=>s.summit);
+  return i<0 ? tr.steps.concat(custom) : tr.steps.slice(0,i).concat(custom, tr.steps.slice(i));
+}
+const isDone = id => S.done.includes(id);
+function trackProg(tr){ const st=trackSteps(tr); const d=st.filter(s=>isDone(s.id)).length; return {d, n:st.length, p: st.length? d/st.length:0}; }
+function skillProg(sk){ const d=sk.mods.filter((m,i)=>S.skillsDone.includes(sk.id+':'+i)).length; return {d,n:sk.mods.length,p:d/sk.mods.length}; }
+function budgetCalc(){
+  const b=S.budget, sal=+b.salary||0, by={besoin:0,envie:0,epargne:0};
+  for (const l of b.lines) by[l.kind]=(by[l.kind]||0)+(+l.amount||0);
+  const spent=by.besoin+by.envie+by.epargne;
+  return {sal, by, spent, rest: sal-spent, saveRate: sal? (by.epargne+Math.max(0,sal-spent))/sal : 0};
+}
+
+/* ---------- Rendu ---------- */
+function render(){
+  if (typing()){ deferRender=true; return; }
+  document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected', t.dataset.tab===UI.tab));
+  const m=$('#main'); m.replaceChildren();
+  const views={moi:vMoi,education:vEdu,finance:vFin,skills:vSkills,style:vStyle,projets:vProj};
+  m.append((views[UI.tab]||vMoi)());
+  const n=S.profile.name||'toi';
+  $('#greet').textContent = `Bonjour ${n}. Voici où tu en es : études, argent, compétences, style et projets.`;
+}
+function go(tab, track){ UI.tab=tab; if (track){ UI.track=track; lsSet('ssv.track',track); } lsSet('ssv.tab',tab); try{ history.replaceState(null,'','#'+tab) }catch(e){} render(); window.scrollTo({top:0,behavior:'smooth'}); }
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>go(t.dataset.tab)));
+
+function vMoi(){
+  const p=S.profile;
+  const fact=(k,l)=>h('div',{class:'fact'},h('div',{class:'eyebrow'},l),h('div',{class:'v'+(p[k]?'':' empty')},p[k]||'À compléter'));
+  const fields=[['name','Nom'],['headline','En une phrase'],['education','Éducation'],['children','Nombre d’enfants'],['status','Statut'],['city','Ville / pays'],['languages','Langues'],['motto','Ma devise']];
+  const profile=h('div',{class:'card profile','data-c':'me'},
+    h('div',{class:'mono','aria-hidden':'true'},(p.name||'K').trim().charAt(0).toUpperCase()),
+    h('div',{style:'min-width:0'},
+      h('div',{style:'display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap'},
+        h('div',{},h('h3',{},p.name||'Ton nom'), h('div',{class:'head'},p.headline||'Économiste · data · finance · Python')),
+        h('button',{class:'btn ghost sm',onclick:()=>{UI.editProfile=!UI.editProfile;render();}},UI.editProfile?'Terminer':'Modifier mon profil')),
+      UI.editProfile
+        ? h('div',{class:'edit-grid'},fields.map(([k,l])=>h('div',{class:'field'},h('label',{for:'pf-'+k},l),
+            h('input',{class:'in',id:'pf-'+k,value:p[k]||'',placeholder:l,oninput:e=>{p[k]=e.target.value;save();}}))))
+        : [h('div',{class:'facts'},fact('education','Éducation'),fact('children','Enfants'),fact('status','Statut'),fact('city','Ville / pays'),fact('languages','Langues')),
+           p.motto?h('div',{class:'motto'},'« '+p.motto+' »'):null]));
+
+  const tiles=h('div',{class:'tiles'},
+    TRACKS.map(tr=>{const pr=trackProg(tr);return h('button',{class:'tile','data-c':'edu',onclick:()=>go('education',tr.id)},ring(pr.p,'var(--edu-ink)'),h('div',{},h('div',{class:'t'},tr.title),h('div',{class:'v num'},`${pr.d}/${pr.n}`)));}),
+    (()=>{const all=SKILLS.reduce((a,s)=>{const q=skillProg(s);a.d+=q.d;a.n+=q.n;return a},{d:0,n:0});return h('button',{class:'tile','data-c':'sk',onclick:()=>go('skills')},ring(all.d/all.n,'var(--sk-ink)'),h('div',{},h('div',{class:'t'},'Skills'),h('div',{class:'v num'},`${all.d}/${all.n}`)));})(),
+    (()=>{const c=budgetCalc();return h('button',{class:'tile','data-c':'fin',onclick:()=>go('finance')},ring(c.saveRate,'var(--fin-ink)'),h('div',{},h('div',{class:'t'},'Taux d’épargne'),h('div',{class:'v num'},c.sal?Math.round(c.saveRate*100)+' %':'–')));})(),
+    (()=>{const a=S.projects.filter(x=>x.status==='cours').length;return h('button',{class:'tile','data-c':'pro',onclick:()=>go('projets')},ring(S.projects.length?S.projects.filter(x=>x.status==='fini').length/S.projects.length:0,'var(--pro-ink)'),h('div',{},h('div',{class:'t'},'Projets en cours'),h('div',{class:'v num'},a)));})()
+  );
+
+  const nexts=[];
+  for (const tr of TRACKS){ const s=trackSteps(tr).find(x=>!isDone(x.id)); if (s) nexts.push({c:'edu',tag:s.lvl||(s.summit?'★':'EX'),t:s.t,sub:tr.title,on:()=>go('education',tr.id)}); }
+  for (const sk of SKILLS){ const i=sk.mods.findIndex((m,i)=>!S.skillsDone.includes(sk.id+':'+i)); if (i>=0) nexts.push({c:'sk',tag:sk.id.toUpperCase(),t:sk.mods[i][0],sub:sk.title,on:()=>go('skills')}); }
+  for (const pr of S.projects.filter(x=>x.status==='cours'&&x.next)) nexts.push({c:'pro',tag:'PRJ',t:pr.next,sub:pr.name,on:()=>go('projets')});
+
+  return h('section',{class:'view'},
+    h('div',{class:'grid'},profile,
+      h('div',{},h('div',{class:'eyebrow',style:'margin:8px 0 10px'},'Vue d’ensemble'),tiles),
+      h('div',{class:'card'},h('div',{class:'sec-head',style:'margin-bottom:4px'},h('div',{},h('h2',{style:'font-size:22px'},'Tes prochaines actions'),h('p',{},'La première étape non cochée de chaque parcours.'))),
+        nexts.length? nexts.slice(0,7).map(n=>h('button',{class:'next','data-c':n.c,onclick:n.on},h('span',{class:'dot'},n.tag),h('span',{style:'min-width:0'},h('b',{},n.t),h('div',{class:'muted',style:'font-size:13px'},n.sub)),h('span',{class:'go'},'→'))) : h('p',{class:'muted'},'Tout est coché. Ajoute un nouveau projet ou une nouvelle étape.'))));
+}
+
+function vEdu(){
+  const tr=TRACKS.find(t=>t.id===UI.track)||TRACKS[0];
+  const pr=trackProg(tr), steps=trackSteps(tr);
+  const toggle=id=>{ S.done=isDone(id)?S.done.filter(x=>x!==id):S.done.concat(id); save(); render(); };
+  let tIn, uIn;
+  const list=h('ol',{class:'path'},steps.map(s=>{
+    const done=isDone(s.id);
+    const badge = s.summit? null : s.mine? h('span',{class:'badge mine'},'PERSO') : s.exam? h('span',{class:'badge exam'},'EXAMEN') : h('span',{class:'badge'},s.lvl);
+    const links=(s.links||[]).slice();
+    if (s.abc && S.abcLink) links.unshift(['Ouvrir mon ABC',S.abcLink]);
+    return h('li',{class:'step'+(done?' done':'')+(s.summit?' summit':'')},
+      h('button',{class:'node',role:'checkbox','aria-checked':done,'aria-label':(done?'Décocher ':'Cocher ')+s.t,title:done?'Fait ! (cliquer pour décocher)':'Marquer comme fait',onclick:()=>toggle(s.id)},
+        done? (s.summit?'★':'✓') : (s.summit?'★':(s.lvl||(s.exam?'EX':'•')).slice(0,3))),
+      h('div',{class:'body'},
+        s.summit?h('div',{class:'summit-tag'},'Summum'):null,
+        h('h4',{},badge,s.t, s.mine?h('button',{class:'del',onclick:()=>{S.custom[tr.id]=(S.custom[tr.id]||[]).filter(c=>c.id!==s.id);S.done=S.done.filter(x=>x!==s.id);save();render();}},'Retirer'):null),
+        s.d?h('p',{},s.d):null,
+        s.abc? h('div',{class:'field',style:'margin-top:8px'},h('label',{for:'abc-link'},'Lien de ton artefact ABC'),h('input',{class:'in',id:'abc-link',type:'url',placeholder:'https://claude.ai/…',value:S.abcLink,onchange:e=>{S.abcLink=e.target.value.trim();save();render();}})) : null,
+        links.length?h('div',{class:'links'},links.map(([l,u])=>h('a',{href:u,target:'_blank',rel:'noopener'},l))):null));
+  }));
+  const nextTr = tr.next && TRACKS.find(t=>t.id===tr.next);
+  return h('section',{class:'view','data-c':'edu'},
+    h('div',{class:'sec-head'},h('div',{},h('h2',{},'Éducation'),h('p',{},'Tes parcours d’études, étape par étape. Clique sur un rond pour cocher une étape.'))),
+    h('div',{class:'chips',role:'group','aria-label':'Parcours'},TRACKS.map(t=>{const q=trackProg(t);return h('button',{class:'chip','aria-pressed':t.id===tr.id,onclick:()=>{UI.track=t.id;lsSet('ssv.track',t.id);render();}},h('b',{},t.title),h('span',{},`${t.sub} · ${q.d}/${q.n}`));})),
+    h('div',{class:'card'},
+      h('div',{class:'track-head'},h('h3',{},tr.title),h('div',{class:'bar',role:'progressbar','aria-valuenow':Math.round(pr.p*100),'aria-valuemin':0,'aria-valuemax':100},h('b',{style:`width:${pr.p*100}%`})),h('span',{class:'num muted'},`${Math.round(pr.p*100)} %`)),
+      h('p',{class:'muted',style:'margin:0'},tr.desc),
+      list,
+      nextTr? h('div',{class:'nextup'},h('div',{},h('div',{class:'eyebrow'},'Après la soutenance'),h('b',{},nextTr.title)),h('button',{class:'btn',onclick:()=>{UI.track=nextTr.id;lsSet('ssv.track',nextTr.id);render();window.scrollTo({top:0,behavior:'smooth'});}},'Continuer vers le master →')):null,
+      h('form',{class:'addrow',onsubmit:e=>{e.preventDefault(); const t=tIn.value.trim(); if(!t) return; let u=uIn.value.trim(); if(u&&!/^https?:\/\//i.test(u)) u='https://'+u; (S.custom[tr.id]=S.custom[tr.id]||[]).push({id:'c-'+uid(),t,url:u}); save(); render();}},
+        tIn=h('input',{class:'in',id:'add-step-'+tr.id,placeholder:'Ajouter une étape (ex. : cours particulier)','aria-label':'Nom de l’étape'}),
+        uIn=h('input',{class:'in',id:'add-link-'+tr.id,placeholder:'Lien (optionnel)','aria-label':'Lien'}),
+        h('button',{class:'btn',type:'submit'},'Ajouter'))));
+}
+
+function vFin(){
+  const b=S.budget;
+  const month=new Intl.DateTimeFormat('fr-FR',{month:'long',year:'numeric'}).format(new Date());
+  const kpiBox=h('div',{class:'kpis'}), chart=h('div',{class:'compare'}), insight=h('p',{class:'insight'});
+  const pctCells={};
+  function paint(){
+    const c=budgetCalc();
+    kpiBox.querySelectorAll('[data-k]').forEach(el=>{
+      const k=el.dataset.k;
+      el.textContent = k==='spent'?fmt(c.spent) : k==='rest'?fmt(c.rest) : (c.sal?Math.round(c.saveRate*100)+' %':'–');
+      if (k==='rest') el.style.color = c.rest<0?'var(--warn)':'';
+    });
+    const seg=(k,v,lab)=>h('span',{class:'k-'+k,style:`flex:0 0 ${Math.max(0,v)*100}%`,title:`${lab} : ${Math.round(v*100)} %`},v>=.08?Math.round(v*100)+' %':'');
+    const tot=Math.max(c.sal,c.spent)||1;
+    chart.replaceChildren(
+      h('div',{class:'crow'},h('span',{class:'eyebrow'},'Ton mois'),h('div',{class:'stack'},seg('besoin',c.by.besoin/tot,'Besoins'),seg('envie',c.by.envie/tot,'Envies'),seg('epargne',c.by.epargne/tot,'Épargne'),c.rest>0?seg('reste',c.rest/tot,'Non affecté'):null)),
+      h('div',{class:'crow'},h('span',{class:'eyebrow'},'Règle 50/30/20'),h('div',{class:'stack'},seg('besoin',.5,'Besoins'),seg('envie',.3,'Envies'),seg('epargne',.2,'Épargne'))),
+      h('div',{class:'legend'},h('span',{},h('i',{class:'k-besoin'}),'Besoins'),h('span',{},h('i',{class:'k-envie'}),'Envies'),h('span',{},h('i',{class:'k-epargne'}),'Épargne & avenir'),h('span',{},h('i',{style:'background:var(--soft)'}),'Non affecté')));
+    if (!c.sal) insight.textContent='Entre ton salaire net du mois pour voir la répartition.';
+    else if (c.rest<0) insight.textContent=`Tu dépenses ${fmt(-c.rest)} de plus que ton salaire ce mois-ci. Commence par les « Envies » pour rééquilibrer.`;
+    else { const e=c.by.epargne/c.sal; insight.textContent = e>=.2 ? `Bravo : ${Math.round(e*100)} % de ton salaire va à l’épargne et à l’avenir. Tu dépasses l’objectif de 20 %.` : `Tu mets ${Math.round(e*100)} % de côté. Pour atteindre 20 %, il faudrait ${fmt(.2*c.sal-c.by.epargne)} de plus par mois. Les ${fmt(c.rest)} non affectés peuvent servir.`; }
+    for (const l of b.lines) if (pctCells[l.id]) pctCells[l.id].textContent = c.sal? Math.round((+l.amount||0)/c.sal*100)+' %':'';
+  }
+  kpiBox.append(
+    h('div',{class:'kpi hero'},h('label',{class:'eyebrow',for:'salary'},'Salaire net · '+month),h('input',{id:'salary',type:'number',min:0,step:10,inputmode:'decimal',class:'num',value:b.salary||'',placeholder:'0',oninput:e=>{b.salary=+e.target.value||0;b.example=false;save();paint();}})),
+    h('div',{class:'kpi'},h('div',{class:'eyebrow'},'Dépenses prévues'),h('div',{class:'v num','data-k':'spent'})),
+    h('div',{class:'kpi'},h('div',{class:'eyebrow'},'Reste à affecter'),h('div',{class:'v num','data-k':'rest'})),
+    h('div',{class:'kpi'},h('div',{class:'eyebrow'},'Taux d’épargne'),h('div',{class:'v num','data-k':'rate'})));
+  const rows=h('tbody',{},b.lines.map(l=>h('tr',{},
+    h('td',{},h('input',{class:'in',id:'bl-'+l.id,value:l.label,'aria-label':'Poste',oninput:e=>{l.label=e.target.value;save();}})),
+    h('td',{},h('select',{class:'in',id:'bk-'+l.id,'aria-label':'Type',onchange:e=>{l.kind=e.target.value;save();paint();}},Object.entries(KINDS).map(([k,v])=>h('option',{value:k,selected:l.kind===k},v)))),
+    h('td',{},h('input',{class:'in amt',id:'ba-'+l.id,type:'number',min:0,step:5,inputmode:'decimal',value:l.amount||'',placeholder:'0','aria-label':'Montant',oninput:e=>{l.amount=+e.target.value||0;b.example=false;save();paint();}})),
+    pctCells[l.id]=h('td',{class:'pct num'}),
+    h('td',{},h('button',{class:'del','aria-label':'Supprimer '+l.label,onclick:()=>{b.lines=b.lines.filter(x=>x.id!==l.id);save();render();}},'✕')))));
+  const view=h('section',{class:'view','data-c':'fin'},
+    h('div',{class:'sec-head'},h('div',{},h('h2',{},'Finance'),h('p',{},'Ton salaire, ton budget du mois, et la comparaison avec la règle 50/30/20.')),
+      h('div',{class:'field'},h('label',{for:'cur'},'Devise'),h('select',{class:'in',id:'cur',onchange:e=>{b.currency=e.target.value;save();render();}},['€','$','CHF','FCFA','HTG','CAD'].map(c=>h('option',{value:c,selected:b.currency===c},c))))),
+    b.example?h('div',{class:'note'},'Chiffres d’exemple. Remplace-les par les tiens : le message disparaît dès ta première modification.'):null,
+    kpiBox,
+    h('div',{class:'grid g2'},
+      h('div',{class:'card'},h('h3',{style:'font-size:18px;margin-bottom:14px'},'Répartition'),chart,insight),
+      h('div',{class:'card'},h('div',{style:'display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px'},h('h3',{style:'font-size:18px'},'Budget du mois'),
+        h('button',{class:'btn sm',onclick:()=>{b.lines.push({id:'l'+uid(),label:'Nouveau poste',kind:'besoin',amount:0});save();render();setTimeout(()=>{const el=document.getElementById('bl-'+b.lines[b.lines.length-1].id);el&&el.select();},30);}},'+ Poste')),
+        h('div',{class:'tablewrap'},h('table',{class:'lines'},rows)))));
+  paint();
+  return view;
+}
+
+function vSkills(){
+  return h('section',{class:'view','data-c':'sk'},
+    h('div',{class:'sec-head'},h('div',{},h('h2',{},'Skills'),h('p',{},'Tes formations en cours. Coche chaque module terminé.'))),
+    h('div',{class:'grid g3'},SKILLS.map(sk=>{const pr=skillProg(sk);return h('div',{class:'card skill'},
+      h('div',{class:'top'},ring(pr.p,'var(--sk-ink)',54),h('div',{},h('h3',{},sk.title),h('div',{class:'muted',style:'font-size:13px'},sk.sub))),
+      h('ul',{class:'mods'},sk.mods.map(([t,d],i)=>{const key=sk.id+':'+i;return h('li',{},h('label',{class:'mod'},
+        h('input',{type:'checkbox',id:'m-'+sk.id+'-'+i,checked:S.skillsDone.includes(key),onchange:e=>{S.skillsDone=e.target.checked?S.skillsDone.concat(key):S.skillsDone.filter(x=>x!==key);save();render();}}),
+        h('span',{},t,d?h('small',{},d):null)));})),
+      h('div',{class:'links'},sk.links.map(([l,u])=>h('a',{href:u,target:'_blank',rel:'noopener'},l))));})));
+}
+
+function vStyle(){
+  const heart='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-9.2-8.6C1.3 8.3 3.2 5 6.4 5c2 0 3.3 1.1 4 2.3h3.2C14.3 6.1 15.6 5 17.6 5c3.2 0 5.1 3.3 3.6 6.4C19 15.6 12 20 12 20z"/></svg>';
+  const own=S.capsule.length;
+  const favFirst=LOOKS.slice().sort((a,b)=>(S.favs.includes(b.id)?1:0)-(S.favs.includes(a.id)?1:0));
+  return h('section',{class:'view','data-c':'sty'},
+    h('div',{class:'sec-head'},h('div',{},h('h2',{},'Style'),h('p',{},'Des idées de tenues façon moodboard Pinterest. Mets un cœur sur tes préférées : elles remontent en premier.'))),
+    h('div',{class:'grid g3'},favFirst.map(L=>{const fav=S.favs.includes(L.id);return h('article',{class:'card look'},
+      h('div',{class:'outfit',style:`--n:${L.pal.length}`,'aria-hidden':'true'},L.pal.map(([c,n])=>{const dark=parseInt(c.slice(1,3),16)*.3+parseInt(c.slice(3,5),16)*.59+parseInt(c.slice(5,7),16)*.11<140;return h('span',{style:`background:${c};color:${dark?'#FFFFFFCC':'#1B2030AA'}`},n);})),
+      h('div',{class:'b'},
+        h('h3',{},L.name,h('button',{class:'heart','aria-pressed':fav,'aria-label':(fav?'Retirer des favoris ':'Ajouter aux favoris ')+L.name,html:heart,onclick:()=>{S.favs=fav?S.favs.filter(x=>x!==L.id):S.favs.concat(L.id);save();render();}})),
+        h('div',{class:'muted',style:'font-size:14px'},L.vibe),
+        h('ul',{},L.pieces.map(p=>h('li',{},p))),
+        h('div',{class:'tip'},L.tip),
+        h('div',{class:'links'},h('a',{href:'https://www.pinterest.com/search/pins/?q='+encodeURIComponent(L.q),target:'_blank',rel:'noopener'},'Voir sur Pinterest'))));})),
+    h('div',{class:'card',style:'margin-top:16px'},
+      h('div',{style:'display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap'},
+        h('div',{},h('h3',{style:'font-size:20px'},'Ma garde-robe capsule'),h('div',{class:'muted',style:'font-size:14px'},'Les 12 pièces de base qui vont avec tous les looks. Coche celles que tu as déjà.')),
+        h('span',{class:'pill'},`${own} / ${CAPSULE.length}`)),
+      h('div',{class:'capsule'},CAPSULE.map((c,i)=>h('label',{},h('input',{type:'checkbox',id:'cap-'+i,checked:S.capsule.includes(c),onchange:e=>{S.capsule=e.target.checked?S.capsule.concat(c):S.capsule.filter(x=>x!==c);save();render();}}),c)))));
+}
+
+function vProj(){
+  const list=S.projects.filter(p=>UI.filter==='all'||p.status===UI.filter);
+  const card=p=>{
+    const editing=UI.editProj===p.id;
+    if (editing) return h('div',{class:'card proj'},
+      h('div',{class:'field'},h('label',{for:'pn-'+p.id},'Nom du projet'),h('input',{class:'in',id:'pn-'+p.id,value:p.name,oninput:e=>{p.name=e.target.value;save();}})),
+      h('div',{class:'field'},h('label',{for:'pc-'+p.id},'Catégorie'),h('input',{class:'in',id:'pc-'+p.id,value:p.cat||'',placeholder:'Data, finance, perso…',oninput:e=>{p.cat=e.target.value;save();}})),
+      h('div',{class:'field'},h('label',{for:'ps-'+p.id},'Statut'),h('select',{class:'in',id:'ps-'+p.id,onchange:e=>{p.status=e.target.value;save();}},Object.entries(STATUS).map(([k,v])=>h('option',{value:k,selected:p.status===k},v)))),
+      h('div',{class:'field'},h('label',{for:'pp-'+p.id},'Avancement : ',h('span',{class:'num',id:'ppv-'+p.id},(p.progress||0)+' %')),h('input',{id:'pp-'+p.id,type:'range',min:0,max:100,step:5,value:p.progress||0,style:'accent-color:var(--pro-ink)',oninput:e=>{p.progress=+e.target.value;document.getElementById('ppv-'+p.id).textContent=p.progress+' %';save();}})),
+      h('div',{class:'field'},h('label',{for:'px-'+p.id},'Prochaine étape'),h('input',{class:'in',id:'px-'+p.id,value:p.next||'',oninput:e=>{p.next=e.target.value;save();}})),
+      h('div',{class:'field'},h('label',{for:'pl-'+p.id},'Lien'),h('input',{class:'in',id:'pl-'+p.id,value:p.link||'',placeholder:'https://…',oninput:e=>{p.link=e.target.value.trim();save();}})),
+      h('div',{class:'acts'},h('button',{class:'btn sm',onclick:()=>{UI.editProj=null;render();}},'Terminer'),
+        h('button',{class:'btn danger sm',onclick:()=>{ if(UI.confirm===p.id){S.projects=S.projects.filter(x=>x.id!==p.id);UI.editProj=null;UI.confirm=null;save();}else UI.confirm=p.id; render(); }},UI.confirm===p.id?'Confirmer la suppression':'Supprimer')));
+    let link=p.link; if (link&&!/^https?:\/\//i.test(link)) link='https://'+link;
+    return h('div',{class:'card proj'},
+      h('div',{class:'meta'},h('span',{class:'pill st-'+p.status},STATUS[p.status]||'Idée'),p.cat?h('span',{class:'muted',style:'font-size:13px'},p.cat):null),
+      h('h3',{},p.name||'Sans titre'),
+      h('div',{style:'display:flex;align-items:center;gap:10px'},h('div',{class:'bar',style:'flex:1'},h('b',{style:`width:${p.progress||0}%`})),h('span',{class:'num muted',style:'font-size:13px'},(p.progress||0)+' %')),
+      p.next?h('div',{class:'nx'},h('b',{},'Prochaine étape'),p.next):null,
+      h('div',{class:'acts'},h('button',{class:'btn ghost sm',onclick:()=>{UI.editProj=p.id;UI.confirm=null;render();}},'Modifier'),link?h('a',{class:'btn ghost sm',href:link,target:'_blank',rel:'noopener',style:'text-decoration:none'},'Ouvrir ↗'):null));
+  };
+  return h('section',{class:'view','data-c':'pro'},
+    h('div',{class:'sec-head'},h('div',{},h('h2',{},'Projets'),h('p',{},'Tout ce que tu construis, avec la prochaine étape de chaque projet.')),
+      h('button',{class:'btn',onclick:()=>{const id='p'+uid();S.projects.unshift({id,name:'Nouveau projet',cat:'',status:'idee',progress:0,next:'',link:''});UI.editProj=id;UI.filter='all';save();render();setTimeout(()=>{const el=document.getElementById('pn-'+id);el&&el.select();},30);}},'+ Nouveau projet')),
+    h('div',{class:'filters',style:'margin-bottom:14px'},[['all','Tous']].concat(Object.entries(STATUS)).map(([k,v])=>h('button',{'aria-pressed':UI.filter===k,onclick:()=>{UI.filter=k;render();}},v+(k==='all'?` · ${S.projects.length}`:` · ${S.projects.filter(p=>p.status===k).length}`)))),
+    list.length? h('div',{class:'grid g3'},list.map(card)) : h('div',{class:'empty'},S.projects.length?'Aucun projet avec ce statut.':'Aucun projet pour l’instant. Clique sur « + Nouveau projet » pour ajouter le premier.'));
+}
+
+/* ---------- Démarrage ---------- */
+$('#today').textContent = new Intl.DateTimeFormat('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date());
+{ const hash=(location.hash||'').slice(1); const t=lsGet('ssv.tab'); UI.tab=['moi','education','finance','skills','style','projets'].includes(hash)?hash:(t||'moi'); }
+try{ const c=lsGet('ssv.cache'); if (c) S=hydrate(JSON.parse(c)); }catch(e){}
+render();
+(async()=>{
+  const db = window.claude && window.claude.use ? await window.claude.use('db').catch(()=>null) : null;
+  if (!db){ setSave('idle','Enregistré sur cet appareil'); return; }
+  docRef = db.doc('life/state');
+  setSave('idle','Synchronisation…');
+  docRef.onSnapshot(snap=>{
+    if (snap.metadata.hasPendingWrites) return;
+    if (snap.exists){
+      const d=snap.data(), j=stable(d);
+      if (j!==lastJSON && !timer_pending()){ lastJSON=j; S=hydrate(clone(d)); lsSet('ssv.cache',JSON.stringify(S)); render(); }
+    }
+    setSave('saved','Synchronisé');
+  }, ()=>setSave('error','Synchronisation interrompue. Recharge la page.'));
+})();
+function timer_pending(){ return writing || $('#save').dataset.s==='saving'; }
+</script>
