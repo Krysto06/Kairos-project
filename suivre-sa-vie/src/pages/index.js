@@ -1,0 +1,16 @@
+/* Correspondance module → page. Un module sans page dédiée affiche sa page « placeholder ». */
+import { MODULES } from '../config/modules.js';
+import dashboard from './dashboard.js';
+import skills from './skills.js';
+import finance from './finance.js';
+import projects from './projects.js';
+import style from './style.js';
+import system from './system.js';
+import { trackPage } from './trackPages.js';
+import { placeholderPage } from './placeholder.js';
+
+export const PAGES = {
+  dashboard, skills, finance, projects, style, system,
+  learning: trackPage('learning'), english: trackPage('english'), gre: trackPage('gre'),
+};
+for (const m of MODULES) if (!PAGES[m.id] && m.plan) PAGES[m.id] = placeholderPage(m);
