@@ -62,6 +62,21 @@ Aucune fonctionnalité existante n'a été supprimée.
 - **Pastilles d'état** partout : Actif, Demo, Placeholder, À connecter, Nécessite une autorisation, Connecté.
 - Pages « placeholder » pour Planning, Analytics, Recherche, Assistant IA : elles décrivent ce qui est prévu et disent clairement que rien n'y fonctionne.
 
+## 2 bis. Module Planning (étape 2)
+
+- **Objectifs** par horizon (long terme, trimestre, mois, semaine), reliés entre eux (« contribue à »), à un module et à une échéance.
+  Progression mesurable : actions terminées, les siennes et celles des sous-objectifs.
+- **Aujourd'hui** : ajout rapide (titre, durée, objectif), cocher, reporter à demain, actions en retard, actions à planifier,
+  suggestions tirées des autres modules (règle simple, pas d'IA).
+- **Semaine** : agenda lundi → dimanche, navigation entre semaines, temps prévu et accompli.
+- **Revue** : bilan chiffré de la semaine et trois questions (marché, bloqué, ajustement).
+- **Tableau de bord** : bloc « Aujourd'hui ».
+- Google Calendar : non connecté (« Nécessite une autorisation »). Analyse IA de la revue : « À connecter ».
+
+Données : premières **collections** (`services/collections.js`), stockées dans la base sous `life/state/tasks`,
+`life/state/goals`, `life/state/reviews`, avec une copie sur l'appareil. Écritures regroupées par document (400 ms) ;
+une saisie en cours n'est jamais écrasée par une synchronisation.
+
 ## 3. Structure du code
 
 ```
@@ -74,17 +89,21 @@ suivre-sa-vie/
               status.js      vocabulaire d'état partagé
               integrations.js  connexions externes et leur état réel
               dataCatalog.js   inventaire des données (enregistrées / fixes / à créer)
+    core/     dom.js, utils.js, storage.js, format.js, dates.js (dates locales, semaines ISO)
     data/     defaults.js    forme de l'état persistant + constantes
               migrations.js  hydrate() + migrations versionnées (schemaVersion)
               content/       contenu fixe : tracks.js, skills.js, style.js
-    domain/   progress.js, budget.js, projects.js   logique métier pure (sans DOM)
+    domain/   progress.js, budget.js, projects.js, planning.js   logique métier pure (sans DOM)
     services/ store.js       état, commit(), statut d'enregistrement, synchro
+              collections.js listes de documents (tâches, objectifs, revues), base + appareil
               persistence/   local.js (appareil) · claudeDb.js (base claude.ai)
     ui/       classes.js     classes Tailwind partagées
               components.js  pageHeader, section, statusBadge, metric, progressBar, ring, notice, field, segmented…
               trackPath.js   frise de parcours réutilisée par Études, Anglais, GRE
+              tasks.js       ligne de tâche et formulaire d'ajout
               shell.js       barre latérale et tiroir
     pages/    une page par module + placeholder.js + index.js (module → page)
+              planning/      index.js (onglets), today.js, week.js, goals.js, review.js, common.js (actions)
 ```
 
 Règles :
@@ -103,10 +122,13 @@ Règles :
 ### Déjà enregistrées (document `life/state`)
 Profil, étapes cochées, étapes perso, lien ABC, modules de formation cochés, projets, budget du mois, favoris et capsule.
 
+### Collections déjà créées
+`life/state/tasks`, `life/state/goals`, `life/state/reviews` (Planning).
+
 ### À créer (collections prévues dans la base claude.ai)
 | Collection | Module |
 |---|---|
-| `goals`, `tasks`, `events` | Planning |
+| `events` | Planning (calendrier) |
 | `sessions` (date, durée, module) | Anglais, GRE, Compétences, Analytics |
 | `tests` (GRE, TOEFL, DET, EF SET : date, scores) | Anglais, GRE |
 | `transactions`, `budgets` (mois archivés) | Finance |
@@ -122,7 +144,7 @@ Les données qui grossissent dans le temps (transactions, sessions, notes) iront
 
 | Besoin | Fonctionnalités | État |
 |---|---|---|
-| Base de données (collections) | Planning, Analytics, historique Finance, sessions, tests, Recherche, garde-robe réelle | À connecter (la base existe, les collections non) |
+| Base de données (collections) | Analytics, historique Finance, sessions, tests, Recherche, garde-robe réelle | À connecter (la base existe, les collections non) |
 | Claude depuis la page (`sample`) | Assistant IA, recommandations, plans d'étude adaptatifs | À connecter |
 | Navigateur / recherche web | Recherche de sources, veille, analyse de pages, LinkedIn | Nécessite une autorisation |
 | Google Calendar | Planning synchronisé | Nécessite une autorisation |

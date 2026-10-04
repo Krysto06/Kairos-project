@@ -1,5 +1,5 @@
 /* Inventaire des données : ce qui est déjà enregistré, ce qui est du contenu fixe, ce qui reste à créer.
-   where: 'state' = champ du document life/state ; 'code' = contenu écrit dans l'app ; 'todo' = à créer. */
+   where: 'state' = champ du document life/state ; 'collection' = collection life/state/<nom> ; 'code' = contenu écrit dans l'app ; 'todo' = à créer. */
 export const DATA_CATALOG = [
   { name: 'Profil', module: 'Profil & système', where: 'state', field: 'profile' },
   { name: 'Étapes de parcours cochées', module: 'Études, Anglais, GRE', where: 'state', field: 'done' },
@@ -14,8 +14,9 @@ export const DATA_CATALOG = [
   { name: 'Formations et modules', module: 'Compétences', where: 'code' },
   { name: 'Looks et liste capsule', module: 'Style', where: 'code' },
 
-  { name: 'Objectifs (long terme → jour)', module: 'Planning', where: 'todo', future: 'goals' },
-  { name: 'Tâches', module: 'Planning', where: 'todo', future: 'tasks' },
+  { name: 'Objectifs (long terme → semaine)', module: 'Planning', where: 'collection', field: 'goals' },
+  { name: 'Actions datées (durée, objectif, fait le)', module: 'Planning', where: 'collection', field: 'tasks' },
+  { name: 'Revues hebdomadaires', module: 'Planning', where: 'collection', field: 'reviews' },
   { name: 'Sessions d’étude (date, durée, module)', module: 'Anglais, GRE, Compétences', where: 'todo', future: 'sessions' },
   { name: 'Tests et résultats (GRE, TOEFL, DET, EF SET)', module: 'Anglais, GRE', where: 'todo', future: 'tests' },
   { name: 'Transactions', module: 'Finance', where: 'todo', future: 'transactions' },

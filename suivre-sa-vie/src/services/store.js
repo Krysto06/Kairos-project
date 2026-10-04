@@ -17,6 +17,8 @@ export const getStatus = () => status;
 export const onStatus = fn => { statusListeners.add(fn); fn(status); };
 export const onExternalChange = fn => changeListeners.add(fn);
 
+/* Les collections signalent aussi leurs enregistrements ici, pour un seul indicateur. */
+export const reportSave = save => setStatus({ save });
 function setStatus(patch) { status = { ...status, ...patch }; statusListeners.forEach(f => f(status)); }
 const busy = () => writing || status.save === 'saving';
 

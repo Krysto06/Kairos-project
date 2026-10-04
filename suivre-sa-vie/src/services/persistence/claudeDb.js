@@ -3,9 +3,15 @@
    Pour passer plus tard à plusieurs collections (tâches, sessions…), c'est ce fichier qu'on étend. */
 export const STATE_DOC = 'life/state';
 
+let dbPromise = null;
+/* La base, ou null. Mémorisée : un seul appel à claude.use('db') par chargement. */
+export function getDb() {
+  if (!dbPromise) dbPromise = window.claude && window.claude.use ? window.claude.use('db').catch(() => null) : Promise.resolve(null);
+  return dbPromise;
+}
+
 export async function connectClaudeDb({ onData, onSnapshotMeta, onError }) {
-  const use = window.claude && window.claude.use;
-  const db = use ? await window.claude.use('db').catch(() => null) : null;
+  const db = await getDb();
   if (!db) return null;
   const ref = db.doc(STATE_DOC);
   ref.onSnapshot(snap => {

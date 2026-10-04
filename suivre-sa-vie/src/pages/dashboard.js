@@ -6,6 +6,9 @@ import { trackProgress, allSkillsProgress, nextActions } from '../domain/progres
 import { budgetSummary } from '../domain/budget.js';
 import { mainProject } from '../domain/projects.js';
 import { routeOfTrack } from '../config/modules.js';
+import { todayKey, minutesLabel } from '../core/dates.js';
+import { tasksOn, overdue, stats } from '../domain/planning.js';
+import { taskRow } from '../ui/tasks.js';
 import { CARD, GHOST, BTN_SM, EYEBROW, H2 } from '../ui/classes.js';
 import { pageHeader, section, metric, progressBar, emptyState, statusBadge } from '../ui/components.js';
 
@@ -31,6 +34,18 @@ export default function dashboard(ctx) {
         h('button', { type: 'button', class: BTN_SM, onclick: () => ctx.go('projects') }, 'Ouvrir le projet'))
     : emptyState('Aucun projet principal. Choisis-en un dans Projets.', h('button', { type: 'button', class: GHOST, onclick: () => ctx.go('projects') }, 'Aller aux projets'));
 
+  const tasksCol = ctx.col('tasks'), all = tasksCol.all(), day = todayKey();
+  const todays = tasksOn(all, day), late = overdue(all, day), ts = stats(todays);
+  const toggle = t => { tasksCol.patch(t.id, { done: !t.done, doneAt: t.done ? null : new Date().toISOString() }); ctx.render(); };
+  const todayBlock = h('div', { class: 'grid gap-4' },
+    h('div', { class: 'flex flex-wrap items-end justify-between gap-3' },
+      h('div', {}, h('h2', { class: H2 }, 'Aujourd’hui'),
+        h('p', { class: 'mt-1 text-sm text-muted tnum' }, ts.n ? `${ts.d}/${ts.n} actions · ${minutesLabel(ts.spent)} sur ${minutesLabel(ts.planned)}` + (late.length ? ` · ${late.length} en retard` : '') : 'Rien de prévu pour l’instant.')),
+      h('button', { type: 'button', class: GHOST, onclick: () => { ctx.ui.planTab = 'today'; ctx.go('planning'); } }, 'Ouvrir le planning')),
+    ts.n ? progressBar(ts.p) : null,
+    todays.length ? h('ul', { class: 'divide-y divide-line border-b border-line' }, todays.slice(0, 5).map(t => taskRow(t, { onToggle: () => toggle(t) })))
+      : emptyState('Aucune action datée d’aujourd’hui. Planifie ta journée depuis le module Planning.'));
+
   const skills = allSkillsProgress(S), bc = budgetSummary(S.budget);
   const metrics = h('div', { class: 'grid gap-x-8 gap-y-8 grid-cols-2 md:grid-cols-3' },
     TRACKS.map(tr => { const q = trackProgress(S, tr); return metric({ label: tr.title, value: `${q.d}/${q.n}`, p: q.p, color: 'edu', sub: 'étapes franchies', onClick: () => ctx.go(routeOfTrack(tr.id)) }); }),
@@ -51,6 +66,7 @@ export default function dashboard(ctx) {
     h('div', {}, header,
       facts.length ? h('dl', { class: '-mt-4 flex flex-wrap gap-x-8 gap-y-2 text-sm' }, facts.map(([k, l]) => h('div', { class: 'flex gap-2' }, h('dt', { class: 'text-muted' }, l), h('dd', { class: 'font-medium' }, p[k])))) : null),
     main,
+    todayBlock,
     section('Vue d’ensemble', 'Clique sur un chiffre pour ouvrir le module.', metrics),
     section('Prochaines actions', null,
       h('div', { class: 'flex flex-wrap items-center gap-2 -mt-3' }, statusBadge('live', 'Règle simple'), h('span', { class: 'text-[13px] text-muted' }, 'Première étape non cochée de chaque parcours et formation. Les recommandations par IA viendront avec l’Assistant.')),

@@ -2,12 +2,16 @@
 import { $, isTyping } from '../core/dom.js';
 import { lsGet, lsSet } from '../core/storage.js';
 import { getState, getStatus, commit, onStatus, onExternalChange, connectRemote } from '../services/store.js';
+import { collection, connectCollections, onCollectionsChange } from '../services/collections.js';
+import { COLLECTIONS } from '../domain/planning.js';
+import { todayKey } from '../core/dates.js';
 import { moduleById } from '../config/modules.js';
 import { PAGES } from '../pages/index.js';
 import { navContent, syncLine } from '../ui/shell.js';
 import { initialRoute, writeRoute } from './router.js';
 
-const ui = { route: initialRoute(), editProj: null, projFilter: 'all', confirm: null, laterOpen: lsGet('ssv.later') === '1', drawer: false };
+const ui = { route: initialRoute(), editProj: null, projFilter: 'all', confirm: null, laterOpen: lsGet('ssv.later') === '1', drawer: false,
+  planTab: lsGet('ssv.planTab') || 'today', planWeek: todayKey(), goalDraft: null, goalConfirm: null, goalAdd: null };
 let deferred = false;
 
 const ctx = {
@@ -17,12 +21,13 @@ const ctx = {
   commit,
   render,
   go,
-  /* Modifie l'état, enregistre et redessine. */
-  update(fn) { fn(getState()); commit(); render(); },
+  col: collection,
+  /* Modifie l'état, enregistre et redessine. force : redessine même si un champ a le focus (après un envoi de formulaire). */
+  update(fn, { force = false } = {}) { fn(getState()); commit(); render(force); },
 };
 
 function go(id) {
-  ui.route = id; ui.editProj = null; ui.confirm = null;
+  ui.route = id; ui.editProj = null; ui.confirm = null; ui.goalConfirm = null;
   writeRoute(id);
   setDrawer(false);
   render();
@@ -43,9 +48,10 @@ function renderNav() {
   $('#topbar-label').textContent = moduleById(ui.route)?.label || '';
 }
 
-export function render() {
+export function render(force = false) {
   const main = $('#main');
-  if (isTyping(main)) { deferred = true; return; }
+  if (!force && isTyping(main)) { deferred = true; return; }
+  deferred = false;
   renderNav();
   const page = PAGES[ui.route] || PAGES.dashboard;
   main.replaceChildren(page(ctx));
@@ -65,6 +71,8 @@ export function start() {
     for (const el of document.querySelectorAll('#sidebar [role=status], #drawer-panel [role=status]')) el.replaceWith(syncLine(s));
     if (ui.route === 'system' && !isTyping($('#main')) && s.save !== 'saving') render();
   });
-  onExternalChange(render);
+  onExternalChange(() => render());
+  onCollectionsChange(() => render());
   connectRemote();
+  connectCollections(COLLECTIONS);
 }

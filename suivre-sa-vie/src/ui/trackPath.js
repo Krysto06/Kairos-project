@@ -50,7 +50,7 @@ export function trackPath(ctx, track, { after } = {}) {
       e.preventDefault();
       const t = tIn.value.trim(); if (!t) return;
       const url = normalizeUrl(uIn.value);
-      ctx.update(st => { (st.custom[track.id] = st.custom[track.id] || []).push({ id: 'c-' + uid(), t, url }); });
+      ctx.update(st => { (st.custom[track.id] = st.custom[track.id] || []).push({ id: 'c-' + uid(), t, url }); }, { force: true });
     } },
     field('add-step-' + track.id, 'Ajouter une étape', tIn = h('input', { class: IN, id: 'add-step-' + track.id, placeholder: 'Ex. : cours particulier' })),
     field('add-link-' + track.id, 'Lien (facultatif)', uIn = h('input', { class: IN, id: 'add-link-' + track.id, placeholder: 'https://…' })),

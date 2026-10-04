@@ -5,12 +5,13 @@ import skills from './skills.js';
 import finance from './finance.js';
 import projects from './projects.js';
 import style from './style.js';
+import planning from './planning/index.js';
 import system from './system.js';
 import { trackPage } from './trackPages.js';
 import { placeholderPage } from './placeholder.js';
 
 export const PAGES = {
-  dashboard, skills, finance, projects, style, system,
+  dashboard, planning, skills, finance, projects, style, system,
   learning: trackPage('learning'), english: trackPage('english'), gre: trackPage('gre'),
 };
 for (const m of MODULES) if (!PAGES[m.id] && m.plan) PAGES[m.id] = placeholderPage(m);

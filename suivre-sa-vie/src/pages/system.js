@@ -8,7 +8,7 @@ import { pageHeader, section, statusBadge, field } from '../ui/components.js';
 
 const PROFILE_FIELDS = [['name', 'Nom'], ['headline', 'En une phrase'], ['education', 'Éducation'], ['children', 'Nombre d’enfants'], ['status', 'Statut'], ['city', 'Ville / pays'], ['languages', 'Langues'], ['motto', 'Ma devise']];
 const REMOTE_STATUS = { pending: 'pending', connected: 'connected', unavailable: 'local', error: 'error' };
-const WHERE = { state: ['connected', 'Enregistré'], code: ['demo', 'Contenu fixe'], todo: ['placeholder', 'À créer'] };
+const WHERE = { state: ['connected', 'Enregistré'], collection: ['connected', 'Enregistré'], code: ['demo', 'Contenu fixe'], todo: ['placeholder', 'À créer'] };
 
 const table = (head, rows) => h('div', { class: 'overflow-x-auto' },
   h('table', { class: 'w-full min-w-[560px] text-left text-sm' },
@@ -32,7 +32,7 @@ export default function system(ctx) {
     const [st, label] = WHERE[d.where];
     return h('tr', {}, h('td', { class: 'py-3 pr-4 font-medium' }, d.name), h('td', { class: 'py-3 pr-4 text-muted' }, d.module),
       h('td', { class: 'py-3 pr-4' }, statusBadge(st, label)),
-      h('td', { class: 'py-3 pr-4 font-mono text-xs text-muted' }, d.where === 'state' ? 'life/state › ' + d.field : d.where === 'todo' ? 'collection « ' + d.future + ' »' : 'code de l’app'));
+      h('td', { class: 'py-3 pr-4 font-mono text-xs text-muted' }, d.where === 'state' ? 'life/state › ' + d.field : d.where === 'collection' ? 'life/state/' + d.field : d.where === 'todo' ? 'collection « ' + d.future + ' »' : 'code de l’app'));
   }));
 
   const roadmap = table(['Module', 'Rôle', 'État'], MODULES.map(m => h('tr', {},

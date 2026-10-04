@@ -9,7 +9,9 @@ export const GROUPS = [
 
 export const MODULES = [
   { id: 'dashboard', label: 'Tableau de bord', group: 'pilotage', status: 'live', color: 'me',
-    summary: 'Ta situation en un coup d’œil : projet principal, progression, prochaines actions.' },
+    summary: 'Ta situation en un coup d’œil : projet principal, journée, progression, prochaines actions.' },
+  { id: 'planning', label: 'Planning', group: 'pilotage', status: 'live', color: 'me',
+    summary: 'Objectifs du long terme à la semaine, actions datées, vue semaine et revue hebdomadaire.' },
   { id: 'learning', label: 'Études', group: 'learning', status: 'live', color: 'edu', track: 'lic',
     summary: 'Licence en économie, de la L1 à la soutenance.' },
   { id: 'english', label: 'Anglais', group: 'learning', status: 'live', color: 'edu', track: 'en',
@@ -25,13 +27,6 @@ export const MODULES = [
   { id: 'style', label: 'Style', group: 'life', status: 'live', color: 'sty',
     summary: 'Idées de tenues et garde-robe capsule.' },
 
-  { id: 'planning', label: 'Planning', group: 'pilotage', status: 'placeholder', color: 'me',
-    summary: 'Transformer tes objectifs en journées concrètes.',
-    plan: {
-      features: ['Objectifs à long terme découpés en objectifs du trimestre, de la semaine, du jour', 'Blocs de travail planifiés (étude GRE, anglais, projet)', 'Revue hebdomadaire : fait, pas fait, ajustement', 'Vue calendrier jour et semaine'],
-      data: ['Objectifs', 'Tâches', 'Sessions d’étude', 'Événements du calendrier', 'Revues hebdomadaires'],
-      needs: [['Base de données (collections dédiées)', 'connect'], ['Google Calendar', 'auth']],
-    } },
   { id: 'analytics', label: 'Analytics', group: 'pilotage', status: 'placeholder', color: 'me',
     summary: 'Mesurer ta progression dans le temps.',
     plan: {
