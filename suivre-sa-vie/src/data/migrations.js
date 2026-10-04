@@ -1,9 +1,10 @@
 /* Normalise et fait évoluer un état venant du stockage (local ou base) vers le schéma courant.
    Règle : une migration ajoute ou renomme, elle ne supprime jamais une donnée de l'utilisateur. */
 import { DEFAULT_STATE, newProject } from './defaults.js';
+import { SKILLS } from './content/skills.js';
 import { clone } from '../core/utils.js';
 
-export const SCHEMA_VERSION = 6;
+export const SCHEMA_VERSION = 7;
 
 const MIGRATIONS = {
   // v2 : projet principal. Ajoute le laboratoire de recherche quantitative s'il n'y a pas encore de projet principal.
@@ -20,6 +21,16 @@ const MIGRATIONS = {
   // v5 : projets détaillés (description, dates, mode d'avancement). Un avancement déjà saisi reste manuel.
   // v6 : objectifs d'épargne (finance). Les transactions vivent dans une collection.
   6: s => { s.finance = Object.assign(clone(DEFAULT_STATE.finance), s.finance || {}); },
+  // v7 : formations modifiables. Les 3 formations de départ sont copiées avec les modules déjà cochés (skillsDone conservé).
+  7: s => {
+    s.learning = Object.assign(clone(DEFAULT_STATE.learning), s.learning || {});
+    if (s.learning.courses.length) return;
+    s.learning.courses = SKILLS.map(sk => {
+      const mods = sk.mods.map(([t, d], i) => ({ id: `${sk.id}-${i}`, t, d: d || '', done: s.skillsDone.includes(`${sk.id}:${i}`) }));
+      const started = mods.some(m => m.done), finished = mods.every(m => m.done);
+      return { id: sk.id, title: sk.title, sub: sk.sub, kind: sk.id === 'cfa' ? 'certification' : 'formation', provider: '', status: finished ? 'fini' : started ? 'cours' : 'afaire', target: '', url: '', mods, links: clone(sk.links) };
+    });
+  },
   5: s => { for (const p of s.projects) Object.assign(p, { description: p.description || '', start: p.start || '', end: p.end || '', progressMode: p.progressMode || (p.progress ? 'manual' : 'auto') }); },
 };
 
@@ -31,6 +42,8 @@ export function hydrate(raw) {
   s.gre = Object.assign(clone(DEFAULT_STATE.gre), d.gre || {});
   s.english = Object.assign(clone(DEFAULT_STATE.english), d.english || {});
   s.finance = Object.assign(clone(DEFAULT_STATE.finance), d.finance || {});
+  s.learning = Object.assign(clone(DEFAULT_STATE.learning), d.learning || {});
+  for (const k of ['courses', 'skills']) if (!Array.isArray(s.learning[k])) s.learning[k] = [];
   if (!Array.isArray(s.finance.savings)) s.finance.savings = [];
   s.gre.target = Object.assign(clone(DEFAULT_STATE.gre.target), (d.gre && d.gre.target) || {});
   if (!Array.isArray(s.budget.lines)) s.budget.lines = clone(DEFAULT_STATE.budget.lines);

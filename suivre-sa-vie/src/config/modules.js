@@ -19,7 +19,7 @@ export const MODULES = [
   { id: 'gre', label: 'GRE & master', group: 'learning', status: 'live', color: 'edu', track: 'gre',
     summary: 'Score cible, tests, séances mesurées, plan de la semaine et parcours jusqu’à l’admission.' },
   { id: 'skills', label: 'Compétences', group: 'learning', status: 'live', color: 'sk',
-    summary: 'Formations en cours : Python pour la data, CFA niveau I, SQL.' },
+    summary: 'Formations et certifications modifiables, référentiel de compétences (niveau, cible, preuves), séances, prochains modules.' },
   { id: 'projects', label: 'Projets', group: 'life', status: 'live', color: 'pro',
     summary: 'Projets avec jalons, actions planifiées, journal de bord et ressources ; projet principal mis en avant.' },
   { id: 'finance', label: 'Finance', group: 'life', status: 'live', color: 'fin',

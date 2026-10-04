@@ -138,6 +138,19 @@ Nouvelles collections `milestones`, `notes`, `resources` (champ `projectId`) ; `
 
 Nouvelles collections `transactions` et `budgets` ; objectifs d'épargne dans l'état (`finance.savings`, migration v6).
 
+## 2 septies. Module Compétences (étape 7)
+
+- **Formations modifiables** (état, `learning.courses`) : les 3 formations de départ (Python, CFA I, SQL) sont copiées une fois
+  par la migration v7 avec les modules déjà cochés ; on peut ensuite tout modifier : intitulé, type (formation, certification,
+  cours en ligne, livre), organisme, statut, date d'examen, lien, modules (ajout, ordre, suppression). Statut suivi
+  automatiquement (en cours au premier module coché, terminé au dernier).
+- **Référentiel** (état, `learning.skills`) : compétences par catégorie, niveau actuel 0–5, niveau visé, preuve.
+  18 suggestions pour un profil économie / data / finance, ajoutées seulement sur clic et sans niveau.
+- **Séances** (collection `sessions`, `subject: 'skills'`) : formation, module, durée, note ; option « module terminé ».
+- **Vue d'ensemble** : formations en cours, modules terminés, temps sur 30 jours, niveaux visés atteints,
+  prochains modules (règle simple) envoyables au Planning, plus grands écarts de niveau.
+- `skillsDone` est conservé dans l'état mais n'est plus utilisé.
+
 ## 3. Structure du code
 
 ```
@@ -154,7 +167,7 @@ suivre-sa-vie/
     data/     defaults.js    forme de l'état persistant + constantes
               migrations.js  hydrate() + migrations versionnées (schemaVersion)
               content/       contenu fixe : tracks.js, skills.js, style.js, gre.js, english.js, projectTemplates.js
-    domain/   progress.js, budget.js, finance.js, projects.js, planning.js, gre.js, english.js   logique métier pure (sans DOM)
+    domain/   progress.js, budget.js, finance.js, projects.js, planning.js, gre.js, english.js, skills.js   logique métier pure (sans DOM)
     services/ store.js       état, commit(), statut d'enregistrement, synchro
               collections.js listes de documents (tâches, objectifs, revues, tests, séances), base + appareil
               planBlocks.js  envoi des séances proposées par un module vers le Planning
@@ -171,6 +184,7 @@ suivre-sa-vie/
               english/       index.js (onglets), overview.js, tests.js, sessions.js, plan.js, common.js
               projects/      index.js (liste ou fiche), list.js, detail.js, common.js
               finance/       index.js (onglets), month.js, transactions.js, importCsv.js, budget.js, savings.js, history.js, common.js
+              skills/        index.js (onglets), overview.js, courses.js, map.js, sessions.js, common.js
 ```
 
 Règles :

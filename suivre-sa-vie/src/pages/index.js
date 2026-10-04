@@ -1,7 +1,7 @@
 /* Correspondance module → page. Un module sans page dédiée affiche sa page « placeholder ». */
 import { MODULES } from '../config/modules.js';
 import dashboard from './dashboard.js';
-import skills from './skills.js';
+import skills from './skills/index.js';
 import finance from './finance/index.js';
 import projects from './projects/index.js';
 import style from './style.js';

@@ -5,7 +5,8 @@ export const DATA_CATALOG = [
   { name: 'Étapes de parcours cochées', module: 'Études, Anglais, GRE', where: 'state', field: 'done' },
   { name: 'Étapes ajoutées à la main', module: 'Études, Anglais, GRE', where: 'state', field: 'custom' },
   { name: 'Lien de l’artefact ABC', module: 'Études', where: 'state', field: 'abcLink' },
-  { name: 'Modules de formation cochés', module: 'Compétences', where: 'state', field: 'skillsDone' },
+  { name: 'Formations et leurs modules', module: 'Compétences', where: 'state', field: 'learning.courses' },
+  { name: 'Référentiel de compétences (niveau, cible, preuves)', module: 'Compétences', where: 'state', field: 'learning.skills' },
   { name: 'Projets (dont projet principal)', module: 'Projets', where: 'state', field: 'projects' },
   { name: 'Jalons de projet', module: 'Projets', where: 'collection', field: 'milestones' },
   { name: 'Journal de bord des projets', module: 'Projets, Recherche', where: 'collection', field: 'notes' },
@@ -17,7 +18,6 @@ export const DATA_CATALOG = [
   { name: 'Looks favoris et pièces capsule possédées', module: 'Style', where: 'state', field: 'favs, capsule' },
 
   { name: 'Parcours et leurs étapes', module: 'Études, Anglais, GRE', where: 'code' },
-  { name: 'Formations et modules', module: 'Compétences', where: 'code' },
   { name: 'Looks et liste capsule', module: 'Style', where: 'code' },
 
   { name: 'Objectifs (long terme → semaine)', module: 'Planning', where: 'collection', field: 'goals' },
@@ -26,7 +26,7 @@ export const DATA_CATALOG = [
   { name: 'Réglages GRE (cibles, date du test, heures)', module: 'GRE', where: 'state', field: 'gre' },
   { name: 'Réglages Anglais (niveau, cible, examen, heures)', module: 'Anglais', where: 'state', field: 'english' },
   { name: 'Tests et scores (GRE, EF SET, DET, TOEFL)', module: 'GRE, Anglais', where: 'collection', field: 'tests' },
-  { name: 'Séances d’étude (durée, questions, mots appris)', module: 'GRE, Anglais', where: 'collection', field: 'sessions' },
+  { name: 'Séances d’étude (durée, questions, mots appris)', module: 'GRE, Anglais, Compétences', where: 'collection', field: 'sessions' },
   { name: 'Vêtements', module: 'Style', where: 'todo', future: 'wardrobe' },
   { name: 'Tenues composées', module: 'Style', where: 'todo', future: 'outfits' },
   { name: 'Événements du calendrier', module: 'Planning', where: 'todo', future: 'events' },
