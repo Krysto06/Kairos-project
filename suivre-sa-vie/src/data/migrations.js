@@ -2,9 +2,10 @@
    Règle : une migration ajoute ou renomme, elle ne supprime jamais une donnée de l'utilisateur. */
 import { DEFAULT_STATE, newProject } from './defaults.js';
 import { SKILLS } from './content/skills.js';
+import { LFCS, PYTHON_PATH } from './content/certifications.js';
 import { clone } from '../core/utils.js';
 
-export const SCHEMA_VERSION = 7;
+export const SCHEMA_VERSION = 8;
 
 const MIGRATIONS = {
   // v2 : projet principal. Ajoute le laboratoire de recherche quantitative s'il n'y a pas encore de projet principal.
@@ -31,6 +32,8 @@ const MIGRATIONS = {
       return { id: sk.id, title: sk.title, sub: sk.sub, kind: sk.id === 'cfa' ? 'certification' : 'formation', provider: '', status: finished ? 'fini' : started ? 'cours' : 'afaire', target: '', url: '', mods, links: clone(sk.links) };
     });
   },
+  // v8 : LFCS (plan de 17 semaines) et parcours Python (freeCodeCamp → Exercism → Real Python → PCAP → PCPP1), ajoutés s'ils manquent.
+  8: s => { for (const c of [LFCS, ...PYTHON_PATH]) if (!s.learning.courses.some(x => x.id === c.id)) s.learning.courses.push(clone(c)); },
   5: s => { for (const p of s.projects) Object.assign(p, { description: p.description || '', start: p.start || '', end: p.end || '', progressMode: p.progressMode || (p.progress ? 'manual' : 'auto') }); },
 };
 

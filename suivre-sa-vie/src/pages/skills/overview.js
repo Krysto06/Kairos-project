@@ -1,5 +1,5 @@
 import { h } from '../../core/dom.js';
-import { todayKey, addDays, minutesLabel } from '../../core/dates.js';
+import { todayKey, addDays, minutesLabel, shortDay } from '../../core/dates.js';
 import { SKILL_LEVELS } from '../../data/content/skills.js';
 import { courseProgress, allSkillsProgress } from '../../domain/progress.js';
 import { minutesByCourse, skillGaps, reachedCount, nextModuleBlocks, blockTitle } from '../../domain/skills.js';
@@ -24,15 +24,16 @@ export default function overview(ctx, K, go) {
 
     h('div', { class: CARD + ' grid gap-4' },
       h('div', { class: 'flex flex-wrap items-end justify-between gap-3' },
-        h('div', {}, h('h2', { class: H3 }, 'Prochains modules'), h('div', { class: 'mt-1 flex flex-wrap items-center gap-2' }, statusBadge('live', 'Règle simple'), h('span', { class: 'text-[13px] text-muted' }, 'Le premier module non coché de chaque formation en cours ou à commencer.'))),
+        h('div', {}, h('h2', { class: H3 }, 'Prochains modules'), h('div', { class: 'mt-1 flex flex-wrap items-center gap-2' }, statusBadge('live', 'Règle simple'), h('span', { class: 'text-[13px] text-muted' }, 'Formations au statut « En cours » : une séance chaque jour prévu par leur rythme (sinon une séance sur le prochain module).'))),
         pb.fresh.length ? h('button', { type: 'button', class: BTN, onclick: pb.addAll }, `Ajouter ${pb.fresh.length} séance${pb.fresh.length > 1 ? 's' : ''} au planning`) : null),
       blocks.length ? h('ul', { class: 'divide-y divide-line' }, blocks.map(b => {
         const c = K.course(b.courseId), pr = courseProgress(c);
-        return h('li', { class: 'grid gap-1 py-3 sm:grid-cols-[minmax(0,1fr)_160px_auto] sm:items-center sm:gap-6' },
-          h('div', { class: 'min-w-0' }, h('div', { class: 'font-medium' }, b.topic), h('div', { class: 'text-[12.5px] text-muted' }, `${c.title} · ${mins.get(c.id) ? minutesLabel(mins.get(c.id)) + ' sur 30 jours' : 'pas de séance récente'}`)),
+        return h('li', { class: 'grid gap-1 py-3 sm:grid-cols-[64px_minmax(0,1fr)_160px_auto] sm:items-center sm:gap-6' },
+          h('span', { class: 'text-[13px] text-muted first-letter:uppercase' }, shortDay(b.date)),
+          h('div', { class: 'min-w-0' }, h('div', { class: 'font-medium' }, b.topic), h('div', { class: 'text-[12.5px] text-muted' }, `${b.course} · ${minutesLabel(b.minutes)}`)),
           h('div', { class: 'flex items-center gap-2' }, progressBar(pr.p, 'flex-1'), h('span', { class: 'font-mono text-[11px] text-muted tnum' }, `${pr.d}/${pr.n}`)),
           h('span', { class: 'text-[12.5px] ' + (pb.planned(b) ? 'text-muted' : 'text-muted/70') }, pb.planned(b) ? 'déjà au planning' : ''));
-      })) : emptyState('Aucun module à venir. Ajoute une formation ou des modules dans l’onglet Formations.', h('button', { type: 'button', class: GHOST, onclick: () => go('courses') }, 'Ouvrir les formations')),
+      })) : emptyState('Aucune séance à proposer. Passe une formation au statut « En cours » dans l’onglet Formations.', h('button', { type: 'button', class: GHOST, onclick: () => go('courses') }, 'Ouvrir les formations')),
       pb.goal ? h('p', { class: 'border-t border-line pt-3 text-[12.5px] text-muted' }, `Les séances seront rattachées à ton objectif « ${pb.goal.title} ».`) : null),
 
     h('div', { class: CARD + ' grid gap-4' },

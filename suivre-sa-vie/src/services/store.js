@@ -3,7 +3,7 @@
    - Chaque commit écrit une copie sur l'appareil, puis (après 600 ms) dans la base claude.ai si elle répond.
    - Une modification venue d'ailleurs (autre appareil) remplace l'état et prévient l'app. */
 import { clone, stable } from '../core/utils.js';
-import { hydrate } from '../data/migrations.js';
+import { hydrate, SCHEMA_VERSION } from '../data/migrations.js';
 import { localAdapter } from './persistence/local.js';
 import { connectClaudeDb } from './persistence/claudeDb.js';
 
@@ -49,6 +49,8 @@ export async function connectRemote() {
       state = hydrate(d);
       localAdapter.save(state);
       changeListeners.forEach(f => f());
+      // Données d'un schéma plus ancien : on enregistre tout de suite la version migrée.
+      if ((Number(d.schemaVersion) || 1) < SCHEMA_VERSION) commit();
     },
     onSnapshotMeta({ exists, definitive }) {
       setStatus({ remote: 'connected' });

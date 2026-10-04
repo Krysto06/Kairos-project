@@ -151,6 +151,18 @@ Nouvelles collections `transactions` et `budgets` ; objectifs d'épargne dans l'
   prochains modules (règle simple) envoyables au Planning, plus grands écarts de niveau.
 - `skillsDone` est conservé dans l'état mais n'est plus utilisé.
 
+## Ajouts du 4 octobre 2026 : LFCS et parcours Python
+
+- Migration v8 : ajoute (si absents) la certification **LFCS** et le **parcours Python** (freeCodeCamp → Exercism → Real Python → PCAP → PCPP1).
+  Contenu dans `data/content/certifications.js`.
+- LFCS : plan de débutante de 17 semaines, 1 h 30 par jour du lundi au samedi (~130 h), examen visé le 6 février 2027 (445 $).
+  Chaque module a des dates (`start`, `end`) ; le module « du moment » est mis en avant.
+- Formations : champ `schedule` (jours ISO + minutes par séance) ; les séances proposées au Planning suivent ce rythme
+  pour les formations « En cours ».
+- Les programmes freeCodeCamp, Exercism, Python Institute et Linux Foundation n'ont pas pu être consultés (domaines bloqués
+  par le réseau de l'environnement) : modules à vérifier avec l'utilisatrice.
+- Un état d'ancien schéma chargé depuis la base est réenregistré migré immédiatement.
+
 ## Prochaine étape : Google Calendar (à faire dans une nouvelle session)
 
 État au 4 octobre 2026 : le connecteur Google Calendar existe sur le compte claude.ai mais n'est **pas connecté**.
