@@ -11,7 +11,7 @@ import { navContent, syncLine } from '../ui/shell.js';
 import { initialRoute, writeRoute } from './router.js';
 
 const ui = { route: initialRoute(), editProj: null, projFilter: 'all', confirm: null, laterOpen: lsGet('ssv.later') === '1', drawer: false,
-  planTab: lsGet('ssv.planTab') || 'today', greTab: lsGet('ssv.greTab') || 'overview', greDraft: null, greConfirm: null, planWeek: todayKey(), goalDraft: null, goalConfirm: null, goalAdd: null };
+  planTab: lsGet('ssv.planTab') || 'today', greTab: lsGet('ssv.greTab') || 'overview', enTab: lsGet('ssv.enTab') || 'overview', enDraft: null, enTestDraft: null, enConfirm: null, greDraft: null, greConfirm: null, planWeek: todayKey(), goalDraft: null, goalConfirm: null, goalAdd: null };
 let deferred = false;
 
 const ctx = {
@@ -27,7 +27,7 @@ const ctx = {
 };
 
 function go(id) {
-  ui.route = id; ui.editProj = null; ui.confirm = null; ui.goalConfirm = null; ui.greConfirm = null;
+  ui.route = id; ui.editProj = null; ui.confirm = null; ui.goalConfirm = null; ui.greConfirm = null; ui.enConfirm = null;
   writeRoute(id);
   setDrawer(false);
   render();

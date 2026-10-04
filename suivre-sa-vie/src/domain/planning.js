@@ -3,6 +3,14 @@
    Objectif : { id, title, horizon, parentId, module, due, done, createdAt }
    Revue : { id = semaine ISO, worked, blocked, adjust, updatedAt } */
 import { nextActions } from './progress.js';
+import { addDays } from '../core/dates.js';
+
+/* Jours proposés pour un plan : les 7 prochains jours à partir d'aujourd'hui (glissants),
+   sans les dimanches si sunday est faux. */
+export function planDays(today, { sunday = false } = {}) {
+  const days = Array.from({ length: 7 }, (_, i) => addDays(today, i));
+  return sunday ? days : days.filter(d => new Date(d + 'T12:00').getDay() !== 0);
+}
 
 export const HORIZONS = { long: 'Long terme', trimestre: 'Trimestre', mois: 'Mois', semaine: 'Semaine' };
 export const DURATIONS = [15, 25, 30, 45, 60, 90, 120];

@@ -27,3 +27,5 @@ export function minutesLabel(m) {
   if (m < 60) return m + ' min';
   return Math.floor(m / 60) + ' h' + (m % 60 ? ' ' + pad(m % 60) : '');
 }
+
+export const daysBetween = (a, b) => Math.round((fromKey(b) - fromKey(a)) / 864e5);

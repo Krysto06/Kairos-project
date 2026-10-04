@@ -49,7 +49,7 @@ export default function dashboard(ctx) {
 
   const skills = allSkillsProgress(S), bc = budgetSummary(S.budget);
   const metrics = h('div', { class: 'grid gap-x-8 gap-y-8 grid-cols-2 md:grid-cols-3 lg:grid-cols-4' },
-    TRACKS.map(tr => { const q = trackProgress(S, tr); return metric({ label: tr.title, value: `${q.d}/${q.n}`, p: q.p, color: 'edu', sub: 'étapes franchies', onClick: () => ctx.go(routeOfTrack(tr.id)) }); }),
+    TRACKS.map(tr => { const q = trackProgress(S, tr); return metric({ label: tr.title, value: `${q.d}/${q.n}`, p: q.p, color: 'edu', sub: tr.id === 'en' && S.english.level ? `niveau ${S.english.level} · étapes franchies` : 'étapes franchies', onClick: () => ctx.go(routeOfTrack(tr.id)) }); }),
     (() => { const last = latest(greTests(ctx.col('tests').all())), t = S.gre.target, tgt = t.v != null && t.q != null ? t.v + t.q : null;
       return metric({ label: 'Score GRE', value: total(last) ?? '–', p: total(last) && tgt ? (total(last) - 260) / (tgt - 260) : null, color: 'edu',
         sub: last ? (tgt ? `cible ${tgt}` : 'cible à fixer') : 'aucun test enregistré', onClick: () => { ctx.ui.greTab = 'overview'; ctx.go('gre'); } }); })(),

@@ -3,7 +3,7 @@
 import { DEFAULT_STATE, newProject } from './defaults.js';
 import { clone } from '../core/utils.js';
 
-export const SCHEMA_VERSION = 3;
+export const SCHEMA_VERSION = 4;
 
 const MIGRATIONS = {
   // v2 : projet principal. Ajoute le laboratoire de recherche quantitative s'il n'y a pas encore de projet principal.
@@ -15,6 +15,8 @@ const MIGRATIONS = {
   },
   // v3 : réglages GRE (score cible, date du test, heures par semaine). Vides : c'est à l'utilisatrice de les fixer.
   3: s => { s.gre = Object.assign(clone(DEFAULT_STATE.gre), s.gre || {}); },
+  // v4 : réglages Anglais (niveau actuel à fixer, cible C2, examen visé).
+  4: s => { s.english = Object.assign(clone(DEFAULT_STATE.english), s.english || {}); },
 };
 
 export function hydrate(raw) {
@@ -23,6 +25,7 @@ export function hydrate(raw) {
   s.profile = Object.assign(clone(DEFAULT_STATE.profile), d.profile || {});
   s.budget = Object.assign(clone(DEFAULT_STATE.budget), d.budget || {});
   s.gre = Object.assign(clone(DEFAULT_STATE.gre), d.gre || {});
+  s.english = Object.assign(clone(DEFAULT_STATE.english), d.english || {});
   s.gre.target = Object.assign(clone(DEFAULT_STATE.gre.target), (d.gre && d.gre.target) || {});
   if (!Array.isArray(s.budget.lines)) s.budget.lines = clone(DEFAULT_STATE.budget.lines);
   for (const k of ['done', 'skillsDone', 'favs', 'capsule', 'projects']) if (!Array.isArray(s[k])) s[k] = [];

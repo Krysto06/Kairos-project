@@ -15,7 +15,7 @@ export const MODULES = [
   { id: 'learning', label: 'Études', group: 'learning', status: 'live', color: 'edu', track: 'lic',
     summary: 'Licence en économie, de la L1 à la soutenance.' },
   { id: 'english', label: 'Anglais', group: 'learning', status: 'live', color: 'edu', track: 'en',
-    summary: 'Parcours de A1 à C2, puis Duolingo English Test et TOEFL.' },
+    summary: 'Niveau CECRL jusqu’au C2, tests EF SET, DET et TOEFL, séances, plan équilibré et parcours.' },
   { id: 'gre', label: 'GRE & master', group: 'learning', status: 'live', color: 'edu', track: 'gre',
     summary: 'Score cible, tests, séances mesurées, plan de la semaine et parcours jusqu’à l’admission.' },
   { id: 'skills', label: 'Compétences', group: 'learning', status: 'live', color: 'sk',

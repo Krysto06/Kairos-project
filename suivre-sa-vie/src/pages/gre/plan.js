@@ -2,17 +2,10 @@ import { h } from '../../core/dom.js';
 import { todayKey, shortDay, minutesLabel } from '../../core/dates.js';
 import { GRE_SECTIONS, GRE_LINKS } from '../../data/content/gre.js';
 import { latest, gaps, daysUntil, phase, allocation, weekPlan, planDays, weakTopics, sessionTitle } from '../../domain/gre.js';
-import { HORIZONS } from '../../domain/planning.js';
-import { newId } from '../../services/collections.js';
+import { planBlocks } from '../../services/planBlocks.js';
 import { CARD, BTN, H3, EYEBROW } from '../../ui/classes.js';
 import { statusBadge, notice, linkChip } from '../../ui/components.js';
 import { targetCard } from './overview.js';
-
-/* Objectif du planning lié au GRE, le plus court terme d'abord. */
-function greGoal(goals) {
-  const order = Object.keys(HORIZONS).reverse();
-  return goals.filter(g => g.module === 'gre' && !g.done).sort((a, b) => order.indexOf(a.horizon) - order.indexOf(b.horizon))[0] || null;
-}
 
 export default function plan(ctx, G) {
   const s = G.settings, today = todayKey(), tests = G.tests(), last = latest(tests);
@@ -25,16 +18,8 @@ export default function plan(ctx, G) {
   if (missing.length) return h('div', { class: 'grid gap-8' }, head, notice('Pour calculer ton plan, il manque ' + missing.join(', ') + '.', 'gold'), targetCard(ctx, G));
 
   const weekly = s.weeklyHours * 60, alloc = allocation(weekly, g), weak = weakTopics(G.sessions());
-  const span = planDays(today), blocks = weekPlan({ days: span.days, weeklyMinutes: weekly, gaps: g, weak, daysLeft: left });
-  const tasksCol = ctx.col('tasks'), existing = new Set(tasksCol.all().map(t => t.date + '|' + t.title));
-  const fresh = blocks.filter(b => !existing.has(b.date + '|' + sessionTitle(b)));
-  const goal = greGoal(ctx.col('goals').all());
-
-  const addAll = () => {
-    const now = new Date().toISOString();
-    for (const b of fresh) tasksCol.put({ id: newId('t'), title: sessionTitle(b), date: b.date, minutes: b.minutes, goalId: goal ? goal.id : null, module: 'gre', done: false, doneAt: null, createdAt: now });
-    ctx.render(true);
-  };
+  const days = planDays(today), blocks = weekPlan({ days, weeklyMinutes: weekly, gaps: g, weak, daysLeft: left });
+  const pb = planBlocks(ctx, 'gre', blocks, sessionTitle), { fresh, goal } = pb, addAll = pb.addAll;
 
   return h('div', { class: 'grid gap-10' },
     head,
@@ -49,11 +34,11 @@ export default function plan(ctx, G) {
             h('dt', {}, GRE_SECTIONS[k].label, h('span', { class: 'ml-2 text-[12.5px] text-muted' }, gap == null ? '' : gap > 0 ? `écart +${String(gap).replace('.', ',')}` : 'cible atteinte')),
             h('dd', { class: 'font-mono tnum' }, minutesLabel(alloc[k]) + ' / sem.'))))),
       h('div', { class: CARD + ' grid gap-4 content-start' },
-        h('div', { class: 'flex flex-wrap items-end justify-between gap-3' }, h('h2', { class: H3 }, span.next ? 'Séances proposées la semaine prochaine' : 'Séances proposées cette semaine'),
+        h('div', { class: 'flex flex-wrap items-end justify-between gap-3' }, h('h2', { class: H3 }, 'Séances des 7 prochains jours'),
           fresh.length ? h('button', { type: 'button', class: BTN, onclick: addAll }, `Ajouter ${fresh.length} séance${fresh.length > 1 ? 's' : ''} au planning`) : null),
         blocks.length ? h('ul', { class: 'divide-y divide-line' }, blocks.map(b => h('li', { class: 'flex items-baseline gap-4 py-2.5' },
           h('span', { class: 'w-16 flex-none text-[13px] text-muted first-letter:uppercase' }, shortDay(b.date)),
-          h('span', { class: 'min-w-0 flex-1 text-sm ' + (existing.has(b.date + '|' + sessionTitle(b)) ? 'text-muted' : 'font-medium') }, sessionTitle(b), existing.has(b.date + '|' + sessionTitle(b)) ? h('span', { class: 'ml-2 text-[12px]' }, '· déjà au planning') : null),
+          h('span', { class: 'min-w-0 flex-1 text-sm ' + (pb.planned(b) ? 'text-muted' : 'font-medium') }, sessionTitle(b), pb.planned(b) ? h('span', { class: 'ml-2 text-[12px]' }, '· déjà au planning') : null),
           h('span', { class: 'font-mono text-xs text-muted tnum' }, minutesLabel(b.minutes)))))
           : h('p', { class: 'text-sm text-muted' }, 'Aucune séance à proposer.'),
         h('p', { class: 'border-t border-line pt-3 text-[12.5px] text-muted' }, goal ? `Les séances seront rattachées à ton objectif « ${goal.title} ».` : 'Astuce : crée un objectif lié au module GRE dans Planning → Objectifs pour y rattacher ces séances.'))),

@@ -2,7 +2,8 @@
    Test : { id, subject:'gre', date, kind, source, v, q, aw, note, createdAt }
    Séance : { id, subject:'gre', date, section:'q'|'v'|'aw', topic, minutes, attempted, correct, note, createdAt } */
 import { GRE_SECTIONS } from '../data/content/gre.js';
-import { fromKey, weekDays, addDays } from '../core/dates.js';
+import { fromKey } from '../core/dates.js';
+export { planDays } from './planning.js';
 
 export const greTests = tests => tests.filter(t => t.subject === 'gre').sort((a, b) => a.date.localeCompare(b.date) || (a.createdAt || '').localeCompare(b.createdAt || ''));
 export const greSessions = sessions => sessions.filter(s => s.subject === 'gre').sort((a, b) => b.date.localeCompare(a.date) || (b.createdAt || '').localeCompare(a.createdAt || ''));
@@ -59,14 +60,7 @@ export function phase(daysLeft) {
   return { id: 'base', label: 'Fondations', detail: 'Revoir les notions de base de chaque thème, sans chrono, et installer l’habitude.' };
 }
 
-/* Jours de travail proposés : du lundi au samedi, à partir d'aujourd'hui. Le dimanche reste libre ;
-   s'il ne reste aucun jour cette semaine, on prépare la semaine suivante. */
-export function planDays(today) {
-  const rest = weekDays(today).slice(0, 6).filter(d => d >= today);
-  return rest.length ? { next: false, days: rest } : { next: true, days: weekDays(addDays(today, 1)).slice(0, 6) };
-}
-
-/* Séances proposées : blocs de 45 min (30 pour l'essai) répartis sur `days` ;
+/* Séances proposées : blocs de 45 min (30 pour l'essai) répartis sur `days` (7 jours glissants, sans dimanche) ;
    thème = point faible connu, sinon rotation des thèmes. */
 export function weekPlan({ days, weeklyMinutes, gaps: g, weak, daysLeft }) {
   if (!weeklyMinutes || !days.length) return [];

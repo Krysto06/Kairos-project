@@ -92,6 +92,22 @@ une saisie en cours n'est jamais écrasée par une synchronisation.
 Nouvelles collections `life/state/tests` et `life/state/sessions`, avec un champ `subject` pour être réutilisées par Anglais.
 Liste des collections synchronisées : `config/collections.js`.
 
+## 2 quater. Module Anglais (étape 4)
+
+- **Vue d'ensemble** : niveau actuel et visé (C2 par défaut), échelle A1 → C2, dernier score à l'examen visé, temps de la semaine,
+  régularité (jours d'affilée, jours actifs sur 14), mots appris sur 30 jours, équilibre des 5 compétences sur 4 semaines.
+- **Objectif** (dans l'état, `english`) : niveau actuel (vide tant qu'il n'est pas évalué), niveau visé, examen (DET ou TOEFL),
+  score visé, date, heures par semaine.
+- **Tests** : EF SET (sur 100, converti en niveau CECRL, avec proposition de mettre à jour le niveau), Duolingo English Test
+  (10–160 et 4 sous-scores), TOEFL iBT (sur 120 et 4 sections, ou nouvelle échelle 1–6). Courbe par examen.
+- **Séances** : compétence, activité (suggestions par palier A/B/C), durée, mots nouveaux, questions et bonnes réponses.
+- **Plan** (règle simple) : blocs de 30 min sur 7 jours, pondérés vers les compétences les moins travaillées, activités adaptées
+  au niveau, ajout au Planning sans doublon.
+- **Parcours** : l'ancienne frise A1 → TOEFL, conservée.
+
+Partagé avec le GRE : collections `tests` et `sessions` (`subject: 'en'`), `services/planBlocks.js` (envoi au Planning),
+`planDays` (7 jours glissants) dans `domain/planning.js`, `ui/lineChart.js`.
+
 ## 3. Structure du code
 
 ```
@@ -107,10 +123,11 @@ suivre-sa-vie/
     core/     dom.js, utils.js, storage.js, format.js, dates.js (dates locales, semaines ISO)
     data/     defaults.js    forme de l'état persistant + constantes
               migrations.js  hydrate() + migrations versionnées (schemaVersion)
-              content/       contenu fixe : tracks.js, skills.js, style.js
-    domain/   progress.js, budget.js, projects.js, planning.js   logique métier pure (sans DOM)
+              content/       contenu fixe : tracks.js, skills.js, style.js, gre.js, english.js
+    domain/   progress.js, budget.js, projects.js, planning.js, gre.js, english.js   logique métier pure (sans DOM)
     services/ store.js       état, commit(), statut d'enregistrement, synchro
-              collections.js listes de documents (tâches, objectifs, revues), base + appareil
+              collections.js listes de documents (tâches, objectifs, revues, tests, séances), base + appareil
+              planBlocks.js  envoi des séances proposées par un module vers le Planning
               persistence/   local.js (appareil) · claudeDb.js (base claude.ai)
     ui/       classes.js     classes Tailwind partagées
               components.js  pageHeader, section, statusBadge, metric, progressBar, ring, notice, field, segmented…
@@ -121,6 +138,7 @@ suivre-sa-vie/
     pages/    une page par module + placeholder.js + index.js (module → page)
               planning/      index.js (onglets), today.js, week.js, goals.js, review.js, common.js (actions)
               gre/           index.js (onglets), overview.js, scores.js, sessions.js, plan.js, common.js
+              english/       index.js (onglets), overview.js, tests.js, sessions.js, plan.js, common.js
 ```
 
 Règles :
