@@ -3,7 +3,7 @@
 import { DEFAULT_STATE, newProject } from './defaults.js';
 import { clone } from '../core/utils.js';
 
-export const SCHEMA_VERSION = 4;
+export const SCHEMA_VERSION = 5;
 
 const MIGRATIONS = {
   // v2 : projet principal. Ajoute le laboratoire de recherche quantitative s'il n'y a pas encore de projet principal.
@@ -17,6 +17,8 @@ const MIGRATIONS = {
   3: s => { s.gre = Object.assign(clone(DEFAULT_STATE.gre), s.gre || {}); },
   // v4 : réglages Anglais (niveau actuel à fixer, cible C2, examen visé).
   4: s => { s.english = Object.assign(clone(DEFAULT_STATE.english), s.english || {}); },
+  // v5 : projets détaillés (description, dates, mode d'avancement). Un avancement déjà saisi reste manuel.
+  5: s => { for (const p of s.projects) Object.assign(p, { description: p.description || '', start: p.start || '', end: p.end || '', progressMode: p.progressMode || (p.progress ? 'manual' : 'auto') }); },
 };
 
 export function hydrate(raw) {

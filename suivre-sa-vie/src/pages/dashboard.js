@@ -4,7 +4,7 @@ import { TRACKS } from '../data/content/tracks.js';
 import { PROJECT_STATUS } from '../data/defaults.js';
 import { trackProgress, allSkillsProgress, nextActions } from '../domain/progress.js';
 import { budgetSummary } from '../domain/budget.js';
-import { mainProject } from '../domain/projects.js';
+import { mainProject, projectProgress, nextMilestone } from '../domain/projects.js';
 import { routeOfTrack } from '../config/modules.js';
 import { todayKey, minutesLabel } from '../core/dates.js';
 import { tasksOn, overdue, stats } from '../domain/planning.js';
@@ -25,14 +25,17 @@ export default function dashboard(ctx) {
   });
 
   const mp = mainProject(S);
-  const main = mp
-    ? h('div', { class: CARD + ' grid gap-5 sm:grid-cols-[1fr_auto] sm:items-end', 'data-c': 'pro' },
-        h('div', { class: 'grid gap-3 min-w-0' },
-          h('div', { class: 'flex flex-wrap items-center gap-2.5' }, h('span', { class: EYEBROW }, 'Projet principal'), h('span', { class: 'text-[13px] text-muted' }, '· ' + (PROJECT_STATUS[mp.status] || 'Idée'))),
-          h('h2', { class: H2 + ' break-words' }, mp.name || 'Sans titre'),
-          h('div', { class: 'flex items-center gap-3 max-w-md' }, progressBar((mp.progress || 0) / 100, 'flex-1'), h('span', { class: 'font-mono text-xs text-muted tnum' }, (mp.progress || 0) + ' %')),
-          h('p', { class: 'text-sm ' + (mp.next ? '' : 'text-muted') }, mp.next ? 'Prochaine étape : ' + mp.next : 'Aucune prochaine étape définie.')),
-        h('button', { type: 'button', class: BTN_SM, onclick: () => ctx.go('projects') }, 'Ouvrir le projet'))
+  const openMain = () => { ctx.ui.projOpen = mp.id; ctx.ui.projTab = 'overview'; ctx.go('projects', { keep: true }); };
+  const main = mp ? (() => {
+    const ms = ctx.col('milestones').all(), pr = projectProgress(mp, ms), nm = nextMilestone(mp, ms);
+    return h('div', { class: CARD + ' grid gap-5 sm:grid-cols-[1fr_auto] sm:items-end', 'data-c': 'pro' },
+      h('div', { class: 'grid gap-3 min-w-0' },
+        h('div', { class: 'flex flex-wrap items-center gap-2.5' }, h('span', { class: EYEBROW }, 'Projet principal'), h('span', { class: 'text-[13px] text-muted' }, '· ' + (PROJECT_STATUS[mp.status] || 'Idée'))),
+        h('h2', { class: H2 + ' break-words' }, mp.name || 'Sans titre'),
+        h('div', { class: 'flex items-center gap-3 max-w-md' }, progressBar(pr.p, 'flex-1'), h('span', { class: 'font-mono text-xs text-muted tnum' }, pr.auto ? `${pr.d}/${pr.n} jalons` : Math.round(pr.p * 100) + ' %')),
+        h('p', { class: 'text-sm ' + (nm || mp.next ? '' : 'text-muted') }, nm ? 'Prochain jalon : ' + nm.title : mp.next ? 'Prochaine étape : ' + mp.next : 'Aucun jalon défini.')),
+      h('button', { type: 'button', class: BTN_SM, onclick: openMain }, 'Ouvrir le projet'));
+  })()
     : emptyState('Aucun projet principal. Choisis-en un dans Projets.', h('button', { type: 'button', class: GHOST, onclick: () => ctx.go('projects') }, 'Aller aux projets'));
 
   const tasksCol = ctx.col('tasks'), all = tasksCol.all(), day = todayKey();

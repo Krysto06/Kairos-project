@@ -13,7 +13,7 @@ export default function today(ctx, P) {
   const todays = tasksOn(all, day), late = overdue(all, day), inbox = unplanned(all), st = stats(todays);
   const sugg = suggestions(ctx.state, all, routeOfTrack).slice(0, 5);
 
-  const row = (t, extra = []) => taskRow(t, { goal: P.goalOf(t), onToggle: () => P.toggle(t), actions: extra });
+  const row = (t, extra = []) => taskRow(t, { goal: P.goalOf(t), project: P.projectOf(t), onToggle: () => P.toggle(t), actions: extra });
 
   return h('div', { class: 'grid gap-10' },
     h('div', { class: 'grid gap-x-8 gap-y-6 grid-cols-2 md:grid-cols-3' },
@@ -29,7 +29,7 @@ export default function today(ctx, P) {
 
     late.length ? h('div', { class: 'grid gap-3' },
       h('div', { class: 'flex items-center gap-2.5' }, h('h2', { class: H3 }, 'En retard'), statusBadge('error', String(late.length))),
-      list(late.map(t => taskRow(t, { goal: P.goalOf(t), showDate: true, onToggle: () => P.toggle(t),
+      list(late.map(t => taskRow(t, { goal: P.goalOf(t), project: P.projectOf(t), showDate: true, onToggle: () => P.toggle(t),
         actions: [['Aujourd’hui', () => P.move(t, day), 'Déplacer à aujourd’hui : ' + t.title], ['Supprimer', () => P.remove(t), 'Supprimer ' + t.title]] })))) : null,
 
     inbox.length ? h('div', { class: 'grid gap-3' }, h('h2', { class: H3 }, 'À planifier'),

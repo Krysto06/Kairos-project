@@ -8,9 +8,9 @@ import { field } from './components.js';
 
 const ACTION = 'rounded-md px-2 py-1 text-[12.5px] font-medium text-muted hover:bg-soft hover:text-ink transition cursor-pointer';
 
-export function taskRow(task, { goal, onToggle, actions = [], showDate = false, compact = false }) {
+export function taskRow(task, { goal, project, onToggle, actions = [], showDate = false, compact = false }) {
   const mod = task.module && moduleById(task.module);
-  const meta = [showDate && task.date ? shortDate(task.date) : null, task.minutes ? minutesLabel(task.minutes) : null, goal ? goal.title : null, mod ? mod.label : null].filter(Boolean);
+  const meta = [showDate && task.date ? shortDate(task.date) : null, task.minutes ? minutesLabel(task.minutes) : null, goal ? goal.title : null, project ? project.name : (mod ? mod.label : null)].filter(Boolean);
   return h('li', { class: 'flex items-start gap-3 ' + (compact ? 'py-2' : 'py-3'), 'data-c': mod ? mod.color : 'me' },
     h('input', { type: 'checkbox', class: 'chk mt-0.5', id: 'tk-' + task.id, checked: !!task.done, 'aria-label': (task.done ? 'Rouvrir ' : 'Terminer ') + task.title, onchange: onToggle }),
     h('div', { class: 'min-w-0 flex-1' },

@@ -11,6 +11,7 @@ export function planning(ctx) {
     allTasks: () => tasks.all(),
     allGoals: () => goals.all().sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || '')),
     goalOf: t => (t.goalId && goals.get(t.goalId)) || null,
+    projectOf: t => (t.projectId && ctx.state.projects.find(p => p.id === t.projectId)) || null,
     addTask(fields) { tasks.put({ id: newId('t'), title: '', date: todayKey(), minutes: 30, goalId: null, module: null, done: false, doneAt: null, createdAt: now(), ...fields }); after(); },
     toggle(t) { tasks.patch(t.id, { done: !t.done, doneAt: t.done ? null : now() }); after(); },
     move(t, date) { tasks.patch(t.id, { date }); after(); },

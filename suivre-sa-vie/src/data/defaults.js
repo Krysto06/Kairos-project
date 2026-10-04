@@ -14,7 +14,7 @@ export const DEFAULT_STATE = {
   skillsDone: [],    // "skillId:indexModule"
   favs: [],          // ids de looks favoris
   capsule: [],       // pièces de la garde-robe capsule déjà possédées
-  projects: [],      // [{id, name, cat, status, progress, next, link, main}]
+  projects: [],      // [{id, name, cat, status, progress, progressMode, next, link, main, description, start, end}]
   gre: { target: { v: null, q: null, aw: null }, testDate: '', weeklyHours: null },
   english: { level: null, target: 'C2', exam: null, examTarget: null, examDate: '', weeklyHours: null },
   budget: {
@@ -29,4 +29,4 @@ export const DEFAULT_STATE = {
   },
 };
 
-export const newProject = (id, fields = {}) => ({ id, name: 'Nouveau projet', cat: '', status: 'idee', progress: 0, next: '', link: '', main: false, ...fields });
+export const newProject = (id, fields = {}) => ({ id, name: 'Nouveau projet', cat: '', status: 'idee', progress: 0, progressMode: 'auto', next: '', link: '', main: false, description: '', start: '', end: '', ...fields });

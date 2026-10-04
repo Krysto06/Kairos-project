@@ -3,7 +3,7 @@ import { MODULES } from '../config/modules.js';
 import dashboard from './dashboard.js';
 import skills from './skills.js';
 import finance from './finance.js';
-import projects from './projects.js';
+import projects from './projects/index.js';
 import style from './style.js';
 import planning from './planning/index.js';
 import gre from './gre/index.js';

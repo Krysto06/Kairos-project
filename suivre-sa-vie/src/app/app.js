@@ -10,7 +10,7 @@ import { PAGES } from '../pages/index.js';
 import { navContent, syncLine } from '../ui/shell.js';
 import { initialRoute, writeRoute } from './router.js';
 
-const ui = { route: initialRoute(), editProj: null, projFilter: 'all', confirm: null, laterOpen: lsGet('ssv.later') === '1', drawer: false,
+const ui = { route: initialRoute(), projOpen: lsGet('ssv.projOpen') || null, projTab: 'overview', projEdit: false, editProj: null, projFilter: 'all', confirm: null, laterOpen: lsGet('ssv.later') === '1', drawer: false,
   planTab: lsGet('ssv.planTab') || 'today', greTab: lsGet('ssv.greTab') || 'overview', enTab: lsGet('ssv.enTab') || 'overview', enDraft: null, enTestDraft: null, enConfirm: null, greDraft: null, greConfirm: null, planWeek: todayKey(), goalDraft: null, goalConfirm: null, goalAdd: null };
 let deferred = false;
 
@@ -26,7 +26,9 @@ const ctx = {
   update(fn, { force = false } = {}) { fn(getState()); commit(); render(force); },
 };
 
-function go(id) {
+/* keep : garde le projet ouvert (lien direct vers une fiche projet). */
+function go(id, { keep = false } = {}) {
+  if (!keep) { ui.projOpen = null; ui.projEdit = false; lsSet('ssv.projOpen', ''); }
   ui.route = id; ui.editProj = null; ui.confirm = null; ui.goalConfirm = null; ui.greConfirm = null; ui.enConfirm = null;
   writeRoute(id);
   setDrawer(false);

@@ -21,7 +21,7 @@ export const MODULES = [
   { id: 'skills', label: 'Compétences', group: 'learning', status: 'live', color: 'sk',
     summary: 'Formations en cours : Python pour la data, CFA niveau I, SQL.' },
   { id: 'projects', label: 'Projets', group: 'life', status: 'live', color: 'pro',
-    summary: 'Tes projets, avec le projet principal mis en avant.' },
+    summary: 'Projets avec jalons, actions planifiées, journal de bord et ressources ; projet principal mis en avant.' },
   { id: 'finance', label: 'Finance', group: 'life', status: 'live', color: 'fin',
     summary: 'Budget du mois et comparaison avec la règle 50/30/20.' },
   { id: 'style', label: 'Style', group: 'life', status: 'live', color: 'sty',

@@ -30,7 +30,7 @@ export default function week(ctx, P) {
         st.n ? h('div', { class: 'flex items-center gap-2' }, progressBar(st.p, 'flex-1 max-w-[120px]'), h('span', { class: 'font-mono text-[11px] text-muted tnum' }, `${st.d}/${st.n}`)) : null,
         st.planned ? h('div', { class: 'text-[12px] text-muted' }, minutesLabel(st.planned) + ' prévues') : null),
       h('div', { class: 'grid gap-1 min-w-0' },
-        list.length ? h('ul', { class: 'divide-y divide-line' }, list.map(t => taskRow(t, { compact: true, goal: P.goalOf(t), onToggle: () => P.toggle(t),
+        list.length ? h('ul', { class: 'divide-y divide-line' }, list.map(t => taskRow(t, { compact: true, goal: P.goalOf(t), project: P.projectOf(t), onToggle: () => P.toggle(t),
           actions: t.done ? [] : [['Lendemain', () => P.tomorrow(t), 'Décaler au lendemain : ' + t.title]] }))) : null,
         h('form', { class: 'max-w-md', onsubmit: e => { e.preventDefault(); const t = input.value.trim(); if (t) { P.addTask({ title: t, date: day }); focusLater('wk-add-' + day, false); } } },
           input = h('input', { class: IN + ' py-1.5 text-[13px]', id: 'wk-add-' + day, placeholder: list.length ? '+ Ajouter une action' : 'Libre · ajouter une action', 'aria-label': 'Ajouter une action le ' + shortDay(day), autocomplete: 'off' }))));

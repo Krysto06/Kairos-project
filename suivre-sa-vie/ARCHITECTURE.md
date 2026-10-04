@@ -108,6 +108,21 @@ Liste des collections synchronisées : `config/collections.js`.
 Partagé avec le GRE : collections `tests` et `sessions` (`subject: 'en'`), `services/planBlocks.js` (envoi au Planning),
 `planDays` (7 jours glissants) dans `domain/planning.js`, `ui/lineChart.js`.
 
+## 2 quinquies. Module Projets (étape 5)
+
+- **Liste** : projet principal mis en avant (avancement, prochain jalon, retards), autres projets filtrables par statut.
+- **Fiche projet** (5 onglets) :
+  - Vue d'ensemble : avancement, échéance (J-x), actions terminées, temps investi, objectif, prochain pas, retards, journal récent.
+  - Jalons : ajout avec date, cocher, réordonner, supprimer. L'avancement se calcule avec les jalons (ou reste manuel).
+  - Actions : tâches liées au projet (`projectId`), visibles aussi dans le Planning à leur date.
+  - Journal : notes datées (note, décision, apprentissage, blocage).
+  - Ressources : papiers, données, outils, cours ; liens vérifiés (http/https uniquement).
+- Modèle de 7 jalons proposé pour le laboratoire de recherche quantitative, ajouté seulement sur clic (« Modèle proposé »).
+- Migration v5 : les projets existants avec un avancement saisi gardent le mode manuel.
+- Suppression d'un projet : jalons, journal et ressources supprimés ; actions conservées dans le Planning, détachées.
+
+Nouvelles collections `milestones`, `notes`, `resources` (champ `projectId`) ; `notes` et `resources` serviront aussi au module Recherche.
+
 ## 3. Structure du code
 
 ```
@@ -123,7 +138,7 @@ suivre-sa-vie/
     core/     dom.js, utils.js, storage.js, format.js, dates.js (dates locales, semaines ISO)
     data/     defaults.js    forme de l'état persistant + constantes
               migrations.js  hydrate() + migrations versionnées (schemaVersion)
-              content/       contenu fixe : tracks.js, skills.js, style.js, gre.js, english.js
+              content/       contenu fixe : tracks.js, skills.js, style.js, gre.js, english.js, projectTemplates.js
     domain/   progress.js, budget.js, projects.js, planning.js, gre.js, english.js   logique métier pure (sans DOM)
     services/ store.js       état, commit(), statut d'enregistrement, synchro
               collections.js listes de documents (tâches, objectifs, revues, tests, séances), base + appareil
@@ -139,6 +154,7 @@ suivre-sa-vie/
               planning/      index.js (onglets), today.js, week.js, goals.js, review.js, common.js (actions)
               gre/           index.js (onglets), overview.js, scores.js, sessions.js, plan.js, common.js
               english/       index.js (onglets), overview.js, tests.js, sessions.js, plan.js, common.js
+              projects/      index.js (liste ou fiche), list.js, detail.js, common.js
 ```
 
 Règles :
@@ -158,14 +174,13 @@ Règles :
 Profil, étapes cochées, étapes perso, lien ABC, modules de formation cochés, projets, budget du mois, favoris et capsule.
 
 ### Collections déjà créées
-`life/state/tasks`, `life/state/goals`, `life/state/reviews` (Planning) ; `life/state/tests`, `life/state/sessions` (GRE, puis Anglais).
+`life/state/tasks`, `life/state/goals`, `life/state/reviews` (Planning) ; `life/state/tests`, `life/state/sessions` (GRE, Anglais) ; `life/state/milestones`, `life/state/notes`, `life/state/resources` (Projets).
 
 ### À créer (collections prévues dans la base claude.ai)
 | Collection | Module |
 |---|---|
 | `events` | Planning (calendrier) |
 | `transactions`, `budgets` (mois archivés) | Finance |
-| `notes`, `resources` | Recherche |
 | `wardrobe`, `outfits` | Style |
 | `activity` (journal horodaté) | Analytics |
 | `ai` (conversations, recommandations) | Assistant IA |

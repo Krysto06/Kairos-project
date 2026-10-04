@@ -7,6 +7,9 @@ export const DATA_CATALOG = [
   { name: 'Lien de l’artefact ABC', module: 'Études', where: 'state', field: 'abcLink' },
   { name: 'Modules de formation cochés', module: 'Compétences', where: 'state', field: 'skillsDone' },
   { name: 'Projets (dont projet principal)', module: 'Projets', where: 'state', field: 'projects' },
+  { name: 'Jalons de projet', module: 'Projets', where: 'collection', field: 'milestones' },
+  { name: 'Journal de bord des projets', module: 'Projets, Recherche', where: 'collection', field: 'notes' },
+  { name: 'Ressources (papiers, données, outils)', module: 'Projets, Recherche', where: 'collection', field: 'resources' },
   { name: 'Budget du mois (salaire, devise, postes)', module: 'Finance', where: 'state', field: 'budget' },
   { name: 'Looks favoris et pièces capsule possédées', module: 'Style', where: 'state', field: 'favs, capsule' },
 
@@ -23,8 +26,6 @@ export const DATA_CATALOG = [
   { name: 'Séances d’étude (durée, questions, mots appris)', module: 'GRE, Anglais', where: 'collection', field: 'sessions' },
   { name: 'Transactions', module: 'Finance', where: 'todo', future: 'transactions' },
   { name: 'Budgets mensuels archivés', module: 'Finance', where: 'todo', future: 'budgets' },
-  { name: 'Notes et questions de recherche', module: 'Recherche', where: 'todo', future: 'notes' },
-  { name: 'Ressources et sources', module: 'Recherche', where: 'todo', future: 'resources' },
   { name: 'Vêtements', module: 'Style', where: 'todo', future: 'wardrobe' },
   { name: 'Tenues composées', module: 'Style', where: 'todo', future: 'outfits' },
   { name: 'Événements du calendrier', module: 'Planning', where: 'todo', future: 'events' },
