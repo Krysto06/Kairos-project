@@ -3,7 +3,7 @@
 import { DEFAULT_STATE, newProject } from './defaults.js';
 import { clone } from '../core/utils.js';
 
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 const MIGRATIONS = {
   // v2 : projet principal. Ajoute le laboratoire de recherche quantitative s'il n'y a pas encore de projet principal.
@@ -13,6 +13,8 @@ const MIGRATIONS = {
       s.projects.unshift(newProject('p-lab', { name: 'Laboratoire de recherche quantitative', cat: 'Recherche', main: true }));
     }
   },
+  // v3 : réglages GRE (score cible, date du test, heures par semaine). Vides : c'est à l'utilisatrice de les fixer.
+  3: s => { s.gre = Object.assign(clone(DEFAULT_STATE.gre), s.gre || {}); },
 };
 
 export function hydrate(raw) {
@@ -20,6 +22,8 @@ export function hydrate(raw) {
   const s = Object.assign(clone(DEFAULT_STATE), clone(d));
   s.profile = Object.assign(clone(DEFAULT_STATE.profile), d.profile || {});
   s.budget = Object.assign(clone(DEFAULT_STATE.budget), d.budget || {});
+  s.gre = Object.assign(clone(DEFAULT_STATE.gre), d.gre || {});
+  s.gre.target = Object.assign(clone(DEFAULT_STATE.gre.target), (d.gre && d.gre.target) || {});
   if (!Array.isArray(s.budget.lines)) s.budget.lines = clone(DEFAULT_STATE.budget.lines);
   for (const k of ['done', 'skillsDone', 'favs', 'capsule', 'projects']) if (!Array.isArray(s[k])) s[k] = [];
   if (!s.custom || typeof s.custom !== 'object' || Array.isArray(s.custom)) s.custom = {};

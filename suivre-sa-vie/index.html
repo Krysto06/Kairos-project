@@ -13,6 +13,7 @@
   --me:232 233 236; --me-ink:58 66 82;     --edu:228 232 240; --edu-ink:40 62 104;
   --fin:227 235 228; --fin-ink:44 96 66;   --sk:236 230 238;  --sk-ink:96 64 104;
   --sty:242 230 229; --sty-ink:128 44 52;  --pro:241 234 220; --pro-ink:122 90 30;
+  --sv:58 98 176; --sq:176 112 14;   /* séries de graphiques (Verbal, Quant), validées daltonisme */
   --c:var(--me); --ci:var(--me-ink);
   --font-display:"Cormorant Garamond",Georgia,"Times New Roman",serif;
   --font-body:Figtree,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -25,6 +26,7 @@
   --me:38 40 46; --me-ink:180 188 204;     --edu:30 37 52; --edu-ink:150 176 222;
   --fin:28 42 33; --fin-ink:138 196 158;   --sk:40 33 43;  --sk-ink:200 170 210;
   --sty:46 31 32; --sty-ink:226 150 154;   --pro:44 37 26; --pro-ink:222 184 116;
+  --sv:91 131 207; --sq:185 128 28;
   color-scheme:dark;
 }}
 :root[data-theme="dark"]{
@@ -34,6 +36,7 @@
   --me:38 40 46; --me-ink:180 188 204;     --edu:30 37 52; --edu-ink:150 176 222;
   --fin:28 42 33; --fin-ink:138 196 158;   --sk:40 33 43;  --sk-ink:200 170 210;
   --sty:46 31 32; --sty-ink:226 150 154;   --pro:44 37 26; --pro-ink:222 184 116;
+  --sv:91 131 207; --sq:185 128 28;
   color-scheme:dark;
 }
 [data-c="me"]{--c:var(--me);--ci:var(--me-ink)}   [data-c="edu"]{--c:var(--edu);--ci:var(--edu-ink)}
@@ -64,7 +67,7 @@ tailwind.config = {
     colors:{ bg:rgb('bg'), surface:rgb('surface'), ink:rgb('ink'), muted:rgb('muted'), line:rgb('line'), soft:rgb('soft'),
       accent:rgb('accent'), 'accent-soft':rgb('accent-soft'), gold:rgb('gold'), warn:rgb('warn'), ok:rgb('ok'), btn:rgb('btn'), btnink:rgb('btnink'),
       c:rgb('c'), ci:rgb('ci'), me:rgb('me'), 'me-ink':rgb('me-ink'), edu:rgb('edu'), 'edu-ink':rgb('edu-ink'), fin:rgb('fin'), 'fin-ink':rgb('fin-ink'),
-      sk:rgb('sk'), 'sk-ink':rgb('sk-ink'), sty:rgb('sty'), 'sty-ink':rgb('sty-ink'), pro:rgb('pro'), 'pro-ink':rgb('pro-ink') },
+      sk:rgb('sk'), 'sk-ink':rgb('sk-ink'), sty:rgb('sty'), 'sty-ink':rgb('sty-ink'), pro:rgb('pro'), 'pro-ink':rgb('pro-ink'), sv:rgb('sv'), sq:rgb('sq') },
     fontFamily:{ display:['"Cormorant Garamond"','Georgia','serif'], body:['Figtree','ui-sans-serif','system-ui','sans-serif'], mono:['"IBM Plex Mono"','ui-monospace','Menlo','monospace'] }
   }}
 };

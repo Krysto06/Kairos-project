@@ -9,6 +9,7 @@ import { routeOfTrack } from '../config/modules.js';
 import { todayKey, minutesLabel } from '../core/dates.js';
 import { tasksOn, overdue, stats } from '../domain/planning.js';
 import { taskRow } from '../ui/tasks.js';
+import { greTests, latest, total } from '../domain/gre.js';
 import { CARD, GHOST, BTN_SM, EYEBROW, H2 } from '../ui/classes.js';
 import { pageHeader, section, metric, progressBar, emptyState, statusBadge } from '../ui/components.js';
 
@@ -47,8 +48,11 @@ export default function dashboard(ctx) {
       : emptyState('Aucune action datée d’aujourd’hui. Planifie ta journée depuis le module Planning.'));
 
   const skills = allSkillsProgress(S), bc = budgetSummary(S.budget);
-  const metrics = h('div', { class: 'grid gap-x-8 gap-y-8 grid-cols-2 md:grid-cols-3' },
+  const metrics = h('div', { class: 'grid gap-x-8 gap-y-8 grid-cols-2 md:grid-cols-3 lg:grid-cols-4' },
     TRACKS.map(tr => { const q = trackProgress(S, tr); return metric({ label: tr.title, value: `${q.d}/${q.n}`, p: q.p, color: 'edu', sub: 'étapes franchies', onClick: () => ctx.go(routeOfTrack(tr.id)) }); }),
+    (() => { const last = latest(greTests(ctx.col('tests').all())), t = S.gre.target, tgt = t.v != null && t.q != null ? t.v + t.q : null;
+      return metric({ label: 'Score GRE', value: total(last) ?? '–', p: total(last) && tgt ? (total(last) - 260) / (tgt - 260) : null, color: 'edu',
+        sub: last ? (tgt ? `cible ${tgt}` : 'cible à fixer') : 'aucun test enregistré', onClick: () => { ctx.ui.greTab = 'overview'; ctx.go('gre'); } }); })(),
     metric({ label: 'Compétences', value: `${skills.d}/${skills.n}`, p: skills.p, color: 'sk', sub: 'modules terminés', onClick: () => ctx.go('skills') }),
     metric({ label: 'Taux d’épargne', value: bc.sal ? percent(bc.saveRate) : '–', p: bc.sal ? bc.saveRate / 0.2 : null, color: 'fin', sub: bc.sal ? 'objectif : 20 %' : 'salaire non renseigné', onClick: () => ctx.go('finance') }),
     metric({ label: 'Projets en cours', value: S.projects.filter(x => x.status === 'cours').length, color: 'pro', sub: `${S.projects.length} au total`, onClick: () => ctx.go('projects') }));

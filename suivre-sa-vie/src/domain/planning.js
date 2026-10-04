@@ -6,7 +6,6 @@ import { nextActions } from './progress.js';
 
 export const HORIZONS = { long: 'Long terme', trimestre: 'Trimestre', mois: 'Mois', semaine: 'Semaine' };
 export const DURATIONS = [15, 25, 30, 45, 60, 90, 120];
-export const COLLECTIONS = ['tasks', 'goals', 'reviews'];
 
 const byCreated = (a, b) => (a.createdAt || '').localeCompare(b.createdAt || '');
 const openFirst = (a, b) => (a.done - b.done) || byCreated(a, b);

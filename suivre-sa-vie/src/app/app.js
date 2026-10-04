@@ -3,7 +3,7 @@ import { $, isTyping } from '../core/dom.js';
 import { lsGet, lsSet } from '../core/storage.js';
 import { getState, getStatus, commit, onStatus, onExternalChange, connectRemote } from '../services/store.js';
 import { collection, connectCollections, onCollectionsChange } from '../services/collections.js';
-import { COLLECTIONS } from '../domain/planning.js';
+import { COLLECTIONS } from '../config/collections.js';
 import { todayKey } from '../core/dates.js';
 import { moduleById } from '../config/modules.js';
 import { PAGES } from '../pages/index.js';
@@ -11,7 +11,7 @@ import { navContent, syncLine } from '../ui/shell.js';
 import { initialRoute, writeRoute } from './router.js';
 
 const ui = { route: initialRoute(), editProj: null, projFilter: 'all', confirm: null, laterOpen: lsGet('ssv.later') === '1', drawer: false,
-  planTab: lsGet('ssv.planTab') || 'today', planWeek: todayKey(), goalDraft: null, goalConfirm: null, goalAdd: null };
+  planTab: lsGet('ssv.planTab') || 'today', greTab: lsGet('ssv.greTab') || 'overview', greDraft: null, greConfirm: null, planWeek: todayKey(), goalDraft: null, goalConfirm: null, goalAdd: null };
 let deferred = false;
 
 const ctx = {
@@ -27,7 +27,7 @@ const ctx = {
 };
 
 function go(id) {
-  ui.route = id; ui.editProj = null; ui.confirm = null; ui.goalConfirm = null;
+  ui.route = id; ui.editProj = null; ui.confirm = null; ui.goalConfirm = null; ui.greConfirm = null;
   writeRoute(id);
   setDrawer(false);
   render();

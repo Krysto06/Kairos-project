@@ -77,6 +77,21 @@ Données : premières **collections** (`services/collections.js`), stockées dan
 `life/state/goals`, `life/state/reviews`, avec une copie sur l'appareil. Écritures regroupées par document (400 ms) ;
 une saisie en cours n'est jamais écrasée par une synchronisation.
 
+## 2 ter. Module GRE (étape 3)
+
+- **Vue d'ensemble** : score actuel, écart à la cible par section, J-x, temps d'étude sur 7 jours, courbe d'évolution
+  (Verbal et Quant sur un seul axe 130–170, cibles en pointillés, survol et clavier), points faibles, format du test.
+- **Objectif** (dans l'état, `gre`) : cibles Verbal / Quant / Writing, date du test, heures par semaine. Vides par défaut.
+- **Scores** : tests (diagnostic, test blanc, officiel) saisis à la main, validés (130–170, 0–6 par 0,5), tableau + courbe.
+- **Séances** : section, thème, durée, questions faites et bonnes réponses ; précision par section et par thème.
+- **Plan** (règle simple, pas d'IA) : phase selon le temps restant, temps hebdomadaire réparti selon l'écart à la cible,
+  séances proposées sur les points faibles, ajout en un clic au Planning (rattachées à un objectif GRE s'il existe, sans doublon).
+- **Parcours** : l'ancienne frise d'étapes, conservée.
+- Format du test écrit dans l'app (septembre 2023) : à revérifier sur ets.org, l'app ne consulte pas ETS.
+
+Nouvelles collections `life/state/tests` et `life/state/sessions`, avec un champ `subject` pour être réutilisées par Anglais.
+Liste des collections synchronisées : `config/collections.js`.
+
 ## 3. Structure du code
 
 ```
@@ -101,9 +116,11 @@ suivre-sa-vie/
               components.js  pageHeader, section, statusBadge, metric, progressBar, ring, notice, field, segmented…
               trackPath.js   frise de parcours réutilisée par Études, Anglais, GRE
               tasks.js       ligne de tâche et formulaire d'ajout
+              lineChart.js   courbes à un axe, survol, clavier, étiquettes directes
               shell.js       barre latérale et tiroir
     pages/    une page par module + placeholder.js + index.js (module → page)
               planning/      index.js (onglets), today.js, week.js, goals.js, review.js, common.js (actions)
+              gre/           index.js (onglets), overview.js, scores.js, sessions.js, plan.js, common.js
 ```
 
 Règles :
@@ -123,14 +140,12 @@ Règles :
 Profil, étapes cochées, étapes perso, lien ABC, modules de formation cochés, projets, budget du mois, favoris et capsule.
 
 ### Collections déjà créées
-`life/state/tasks`, `life/state/goals`, `life/state/reviews` (Planning).
+`life/state/tasks`, `life/state/goals`, `life/state/reviews` (Planning) ; `life/state/tests`, `life/state/sessions` (GRE, puis Anglais).
 
 ### À créer (collections prévues dans la base claude.ai)
 | Collection | Module |
 |---|---|
 | `events` | Planning (calendrier) |
-| `sessions` (date, durée, module) | Anglais, GRE, Compétences, Analytics |
-| `tests` (GRE, TOEFL, DET, EF SET : date, scores) | Anglais, GRE |
 | `transactions`, `budgets` (mois archivés) | Finance |
 | `notes`, `resources` | Recherche |
 | `wardrobe`, `outfits` | Style |

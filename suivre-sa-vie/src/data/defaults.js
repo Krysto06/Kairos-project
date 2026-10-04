@@ -15,6 +15,7 @@ export const DEFAULT_STATE = {
   favs: [],          // ids de looks favoris
   capsule: [],       // pièces de la garde-robe capsule déjà possédées
   projects: [],      // [{id, name, cat, status, progress, next, link, main}]
+  gre: { target: { v: null, q: null, aw: null }, testDate: '', weeklyHours: null },
   budget: {
     salary: 0, currency: '€', example: false,
     lines: [

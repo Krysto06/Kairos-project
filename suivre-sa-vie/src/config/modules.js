@@ -17,7 +17,7 @@ export const MODULES = [
   { id: 'english', label: 'Anglais', group: 'learning', status: 'live', color: 'edu', track: 'en',
     summary: 'Parcours de A1 à C2, puis Duolingo English Test et TOEFL.' },
   { id: 'gre', label: 'GRE & master', group: 'learning', status: 'live', color: 'edu', track: 'gre',
-    summary: 'Préparation au GRE et dossier de candidature en master.' },
+    summary: 'Score cible, tests, séances mesurées, plan de la semaine et parcours jusqu’à l’admission.' },
   { id: 'skills', label: 'Compétences', group: 'learning', status: 'live', color: 'sk',
     summary: 'Formations en cours : Python pour la data, CFA niveau I, SQL.' },
   { id: 'projects', label: 'Projets', group: 'life', status: 'live', color: 'pro',
