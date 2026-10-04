@@ -151,6 +151,22 @@ Nouvelles collections `transactions` et `budgets` ; objectifs d'épargne dans l'
   prochains modules (règle simple) envoyables au Planning, plus grands écarts de niveau.
 - `skillsDone` est conservé dans l'état mais n'est plus utilisé.
 
+## Prochaine étape : Google Calendar (à faire dans une nouvelle session)
+
+État au 4 octobre 2026 : le connecteur Google Calendar existe sur le compte claude.ai mais n'est **pas connecté**.
+Il faut le connecter (claude.ai → Paramètres → Connecteurs), puis ouvrir une nouvelle session pour que ses outils soient chargés.
+
+Déjà prêt : les actions du Planning ont une heure facultative (`time`, « HH:MM ») et une durée (`minutes`),
+ce qui suffit pour créer un événement (début = date + heure, fin = début + durée).
+
+Plan prévu :
+1. Lire le schéma des outils du connecteur dans la session (liste et création d'événements) ; ne rien deviner.
+2. Déclarer la capacité `mcp` de l'artefact avec uniquement ces outils (`servers: [{ server: 'Google Calendar', tools: [...] }]`).
+3. `services/calendar.js` : lecture des événements du jour et de la semaine (watchTool), création d'un événement depuis une action (callTool, sur clic).
+4. Planning : événements affichés à côté des actions (Aujourd'hui, Semaine), bouton « Ajouter à Google Calendar » sur les actions avec heure,
+   champ `calendarEventId` sur la tâche pour éviter les doublons.
+5. États honnêtes : « Connecté » seulement si l'appel répond ; sinon « Nécessite une autorisation » et le Planning fonctionne seul.
+
 ## 3. Structure du code
 
 ```

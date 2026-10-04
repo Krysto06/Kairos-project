@@ -13,7 +13,7 @@ export default function today(ctx, P) {
   const todays = tasksOn(all, day), late = overdue(all, day), inbox = unplanned(all), st = stats(todays);
   const sugg = suggestions(ctx.state, all, routeOfTrack).slice(0, 5);
 
-  const row = (t, extra = []) => taskRow(t, { goal: P.goalOf(t), project: P.projectOf(t), onToggle: () => P.toggle(t), actions: extra });
+  const row = (t, extra = []) => taskRow(t, { goal: P.goalOf(t), project: P.projectOf(t), onToggle: () => P.toggle(t), onTime: time => P.setTime(t, time), actions: extra });
 
   return h('div', { class: 'grid gap-10' },
     h('div', { class: 'grid gap-x-8 gap-y-6 grid-cols-2 md:grid-cols-3' },
@@ -23,7 +23,7 @@ export default function today(ctx, P) {
 
     h('div', { class: CARD + ' grid gap-5' },
       h('div', { class: 'flex flex-wrap items-baseline justify-between gap-2' }, h('h2', { class: H3 + ' first-letter:uppercase' }, dayLabel(day)), h('span', { class: 'text-[13px] text-muted' }, `${st.n} action${st.n > 1 ? 's' : ''}`)),
-      taskForm({ id: 'today-add', goals, onAdd: f => P.addTask({ ...f, date: day }) }),
+      taskForm({ id: 'today-add', goals, withTime: true, onAdd: f => P.addTask({ ...f, date: day }) }),
       todays.length ? list(todays.map(t => row(t, t.done ? [['Supprimer', () => P.remove(t), 'Supprimer ' + t.title]] : [['Demain', () => P.tomorrow(t), 'Reporter à demain : ' + t.title], ['Supprimer', () => P.remove(t), 'Supprimer ' + t.title]])))
         : emptyState('Aucune action pour aujourd’hui. Ajoute-en une ci-dessus, ou reprends une suggestion plus bas.')),
 

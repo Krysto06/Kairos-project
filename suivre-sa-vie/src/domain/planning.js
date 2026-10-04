@@ -1,5 +1,5 @@
 /* Planning : objectifs (long terme → semaine), tâches datées, revues hebdomadaires. Fonctions pures.
-   Tâche : { id, title, date ('AAAA-MM-JJ' ou null = à planifier), minutes, goalId, module, done, doneAt, createdAt }
+   Tâche : { id, title, date ('AAAA-MM-JJ' ou null = à planifier), time ('HH:MM' ou null), minutes, goalId, module, projectId, done, doneAt, createdAt }
    Objectif : { id, title, horizon, parentId, module, due, done, createdAt }
    Revue : { id = semaine ISO, worked, blocked, adjust, updatedAt } */
 import { nextActions } from './progress.js';
@@ -16,7 +16,15 @@ export const HORIZONS = { long: 'Long terme', trimestre: 'Trimestre', mois: 'Moi
 export const DURATIONS = [15, 25, 30, 45, 60, 90, 120];
 
 const byCreated = (a, b) => (a.createdAt || '').localeCompare(b.createdAt || '');
-const openFirst = (a, b) => (a.done - b.done) || byCreated(a, b);
+/* Ouvertes d'abord ; puis celles qui ont une heure, dans l'ordre de la journée ; puis par création. */
+const byTime = (a, b) => (a.time ? 0 : 1) - (b.time ? 0 : 1) || (a.time || '').localeCompare(b.time || '');
+const openFirst = (a, b) => (a.done - b.done) || byTime(a, b) || byCreated(a, b);
+
+/* Fin d'une action horodatée : « 09:30 » + 45 min → « 10:15 ». */
+export function endTime(time, minutes) {
+  const [hh, mm] = time.split(':').map(Number), t = hh * 60 + mm + (+minutes || 0);
+  return `${String(Math.floor(t / 60) % 24).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`;
+}
 
 export const tasksOn = (tasks, day) => tasks.filter(t => t.date === day).sort(openFirst);
 export const overdue = (tasks, today) => tasks.filter(t => !t.done && t.date && t.date < today).sort((a, b) => a.date.localeCompare(b.date));

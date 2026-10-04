@@ -9,7 +9,7 @@ export const INTEGRATIONS = [
   { id: 'web', name: 'Recherche web et navigateur', status: 'auth',
     detail: 'L’app ne consulte pas Internet. Les liens ouvrent un nouvel onglet ; aucune recherche n’est faite à ta place.' },
   { id: 'calendar', name: 'Google Calendar', status: 'auth',
-    detail: 'Aucun accès à ton calendrier.' },
+    detail: 'Connecteur disponible sur claude.ai mais pas encore connecté. Aucun accès à ton calendrier pour l’instant.' },
   { id: 'linkedin', name: 'LinkedIn', status: 'auth',
     detail: 'Aucun accès. Rien n’est lu depuis ton profil.' },
   { id: 'bank', name: 'Banque ou agrégateur bancaire', status: 'connect',
