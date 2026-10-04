@@ -23,7 +23,7 @@ export const MODULES = [
   { id: 'projects', label: 'Projets', group: 'life', status: 'live', color: 'pro',
     summary: 'Projets avec jalons, actions planifiées, journal de bord et ressources ; projet principal mis en avant.' },
   { id: 'finance', label: 'Finance', group: 'life', status: 'live', color: 'fin',
-    summary: 'Budget du mois et comparaison avec la règle 50/30/20.' },
+    summary: 'Budget prévu contre dépenses réelles, transactions et import CSV, objectifs d’épargne, historique mensuel.' },
   { id: 'style', label: 'Style', group: 'life', status: 'live', color: 'sty',
     summary: 'Idées de tenues et garde-robe capsule.' },
 

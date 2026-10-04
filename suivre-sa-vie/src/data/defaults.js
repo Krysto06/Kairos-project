@@ -16,6 +16,7 @@ export const DEFAULT_STATE = {
   capsule: [],       // pièces de la garde-robe capsule déjà possédées
   projects: [],      // [{id, name, cat, status, progress, progressMode, next, link, main, description, start, end}]
   gre: { target: { v: null, q: null, aw: null }, testDate: '', weeklyHours: null },
+  finance: { savings: [] },  // objectifs d'épargne [{id, name, target, saved, deadline}]
   english: { level: null, target: 'C2', exam: null, examTarget: null, examDate: '', weeklyHours: null },
   budget: {
     salary: 0, currency: '€', example: false,

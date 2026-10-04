@@ -10,7 +10,7 @@ import { PAGES } from '../pages/index.js';
 import { navContent, syncLine } from '../ui/shell.js';
 import { initialRoute, writeRoute } from './router.js';
 
-const ui = { route: initialRoute(), projOpen: lsGet('ssv.projOpen') || null, projTab: 'overview', projEdit: false, editProj: null, projFilter: 'all', confirm: null, laterOpen: lsGet('ssv.later') === '1', drawer: false,
+const ui = { route: initialRoute(), finTab: lsGet('ssv.finTab') || 'month', finMonth: todayKey().slice(0, 7), finDraft: null, finFilter: 'all', finImport: null, finSpan: 6, projOpen: lsGet('ssv.projOpen') || null, projTab: 'overview', projEdit: false, editProj: null, projFilter: 'all', confirm: null, laterOpen: lsGet('ssv.later') === '1', drawer: false,
   planTab: lsGet('ssv.planTab') || 'today', greTab: lsGet('ssv.greTab') || 'overview', enTab: lsGet('ssv.enTab') || 'overview', enDraft: null, enTestDraft: null, enConfirm: null, greDraft: null, greConfirm: null, planWeek: todayKey(), goalDraft: null, goalConfirm: null, goalAdd: null };
 let deferred = false;
 

@@ -2,7 +2,7 @@
 import { MODULES } from '../config/modules.js';
 import dashboard from './dashboard.js';
 import skills from './skills.js';
-import finance from './finance.js';
+import finance from './finance/index.js';
 import projects from './projects/index.js';
 import style from './style.js';
 import planning from './planning/index.js';

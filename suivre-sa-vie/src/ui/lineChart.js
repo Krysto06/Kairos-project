@@ -8,14 +8,14 @@ const NS = 'http://www.w3.org/2000/svg';
 const el = (tag, attrs = {}, text) => { const e = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); if (text != null) e.textContent = text; return e; };
 const col = (c, a = 1) => `rgb(var(--${c}) / ${a})`;
 
-export function lineChart({ series, yMin, yMax, yStep = 10, height = 260, label }) {
+export function lineChart({ series, yMin, yMax, yStep = 10, height = 260, label, xFormat = shortDate, yFormat = String }) {
   const wrap = h('div', { class: 'relative w-full' });
   const tip = h('div', { class: 'pointer-events-none absolute z-10 hidden min-w-[150px] rounded-lg border border-line bg-surface px-3 py-2 text-[12.5px] shadow-lg' });
   const xs = [...new Set(series.flatMap(s => s.points.map(p => p.x)))].sort();
   let idx = xs.length - 1;
 
   function draw(W) {
-    const M = { l: 40, r: 96, t: 14, b: 30 }, iw = Math.max(W - M.l - M.r, 60), ih = height - M.t - M.b;
+    const M = { l: 48, r: 110, t: 14, b: 30 }, iw = Math.max(W - M.l - M.r, 60), ih = height - M.t - M.b;
     const t0 = fromKey(xs[0]).getTime(), t1 = fromKey(xs[xs.length - 1]).getTime();
     const X = x => M.l + (t1 === t0 ? iw / 2 : (fromKey(x).getTime() - t0) / (t1 - t0) * iw);
     const Y = y => M.t + (1 - (y - yMin) / (yMax - yMin)) * ih;
@@ -23,10 +23,10 @@ export function lineChart({ series, yMin, yMax, yStep = 10, height = 260, label 
 
     for (let y = yMin; y <= yMax; y += yStep) {
       svg.append(el('line', { x1: M.l, x2: M.l + iw, y1: Y(y), y2: Y(y), stroke: col('line'), 'stroke-width': 1 }));
-      svg.append(el('text', { x: M.l - 8, y: Y(y), dy: '0.32em', 'text-anchor': 'end', 'font-size': 11, fill: col('muted'), 'font-family': 'var(--font-mono)' }, y));
+      svg.append(el('text', { x: M.l - 8, y: Y(y), dy: '0.32em', 'text-anchor': 'end', 'font-size': 11, fill: col('muted'), 'font-family': 'var(--font-mono)' }, yFormat(y)));
     }
     const ticks = xs.length <= 6 ? xs : xs.filter((_, i) => i % Math.ceil(xs.length / 6) === 0 || i === xs.length - 1);
-    for (const x of ticks) svg.append(el('text', { x: X(x), y: height - 8, 'text-anchor': 'middle', 'font-size': 11, fill: col('muted') }, shortDate(x)));
+    for (const x of ticks) svg.append(el('text', { x: X(x), y: height - 8, 'text-anchor': 'middle', 'font-size': 11, fill: col('muted') }, xFormat(x)));
 
     const ends = [];
     for (const s of series) {
@@ -39,7 +39,7 @@ export function lineChart({ series, yMin, yMax, yStep = 10, height = 260, label 
     // Étiquettes directes en bout de courbe, écartées si elles se chevauchent.
     ends.sort((a, b) => a.y - b.y);
     for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 16) ends[i].y = ends[i - 1].y + 16;
-    for (const e of ends) svg.append(el('text', { x: M.l + iw + 10, y: e.y, dy: '0.32em', 'font-size': 12, fill: col('ink'), 'font-weight': 600 }, `${e.s.label} ${e.v}`));
+    for (const e of ends) svg.append(el('text', { x: M.l + iw + 10, y: e.y, dy: '0.32em', 'font-size': 12, fill: col('ink'), 'font-weight': 600 }, `${e.s.label} ${yFormat(e.v)}`));
 
     const hair = el('line', { y1: M.t, y2: M.t + ih, stroke: col('ink', 0.35), 'stroke-width': 1, visibility: 'hidden' });
     svg.append(hair);
@@ -47,10 +47,10 @@ export function lineChart({ series, yMin, yMax, yStep = 10, height = 260, label 
       idx = Math.max(0, Math.min(xs.length - 1, i));
       const x = xs[idx], px = X(x);
       hair.setAttribute('x1', px); hair.setAttribute('x2', px); hair.setAttribute('visibility', 'visible');
-      tip.replaceChildren(h('div', { class: 'mb-1 text-muted' }, shortDate(x)),
+      tip.replaceChildren(h('div', { class: 'mb-1 text-muted' }, xFormat(x)),
         ...series.map(s => { const p = s.points.find(q => q.x === x); return h('div', { class: 'flex items-center gap-2' },
           h('i', { class: 'inline-block h-0.5 w-3 rounded', style: `background:${col(s.color)}` }),
-          h('b', { class: 'tnum' }, p ? String(p.y) : '–'), h('span', { class: 'text-muted' }, s.label)); }));
+          h('b', { class: 'tnum' }, p ? yFormat(p.y) : '–'), h('span', { class: 'text-muted' }, s.label)); }));
       tip.classList.remove('hidden');
       const left = Math.min(Math.max(px + 12, 0), W - 170);
       tip.style.left = left + 'px'; tip.style.top = M.t + 'px';

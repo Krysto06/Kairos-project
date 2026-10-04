@@ -123,6 +123,21 @@ Partagé avec le GRE : collections `tests` et `sessions` (`subject: 'en'`), `ser
 
 Nouvelles collections `milestones`, `notes`, `resources` (champ `projectId`) ; `notes` et `resources` serviront aussi au module Recherche.
 
+## 2 sexies. Module Finance (étape 6)
+
+- **Mois** : sélecteur de mois ; revenus (réels, sinon salaire prévu signalé comme tel), dépenses réelles, reste,
+  taux d'épargne réel ; prévu contre réel par poste (dépassements en rouge) ; règle 50/30/20 sur le réel ;
+  alerte sur les dépenses sans poste ; clôture du mois (archive le budget prévu du mois, réouvrable).
+- **Transactions** : saisie (dépense ou revenu, poste) ; **import CSV** d'un relevé exporté à la main
+  (séparateur, dates et montants français détectés, colonnes à confirmer, aperçu, doublons ignorés,
+  poste repris d'un libellé déjà classé) ; filtres ; reclassement.
+- **Budget** : l'ancien éditeur, devenu le budget modèle d'un mois.
+- **Épargne** : objectifs chiffrés avec échéance et effort mensuel ; repère de fonds d'urgence (3 à 6 mois de besoins).
+- **Historique** : revenus et dépenses sur 6 ou 12 mois (courbe + tableau), même définition de l'épargne que l'onglet Mois.
+- Aucune connexion bancaire : le fichier CSV est lu dans le navigateur.
+
+Nouvelles collections `transactions` et `budgets` ; objectifs d'épargne dans l'état (`finance.savings`, migration v6).
+
 ## 3. Structure du code
 
 ```
@@ -135,11 +150,11 @@ suivre-sa-vie/
               status.js      vocabulaire d'état partagé
               integrations.js  connexions externes et leur état réel
               dataCatalog.js   inventaire des données (enregistrées / fixes / à créer)
-    core/     dom.js, utils.js, storage.js, format.js, dates.js (dates locales, semaines ISO)
+    core/     dom.js, utils.js, storage.js, format.js, dates.js (dates locales, semaines ISO), csv.js (relevés bancaires)
     data/     defaults.js    forme de l'état persistant + constantes
               migrations.js  hydrate() + migrations versionnées (schemaVersion)
               content/       contenu fixe : tracks.js, skills.js, style.js, gre.js, english.js, projectTemplates.js
-    domain/   progress.js, budget.js, projects.js, planning.js, gre.js, english.js   logique métier pure (sans DOM)
+    domain/   progress.js, budget.js, finance.js, projects.js, planning.js, gre.js, english.js   logique métier pure (sans DOM)
     services/ store.js       état, commit(), statut d'enregistrement, synchro
               collections.js listes de documents (tâches, objectifs, revues, tests, séances), base + appareil
               planBlocks.js  envoi des séances proposées par un module vers le Planning
@@ -155,6 +170,7 @@ suivre-sa-vie/
               gre/           index.js (onglets), overview.js, scores.js, sessions.js, plan.js, common.js
               english/       index.js (onglets), overview.js, tests.js, sessions.js, plan.js, common.js
               projects/      index.js (liste ou fiche), list.js, detail.js, common.js
+              finance/       index.js (onglets), month.js, transactions.js, importCsv.js, budget.js, savings.js, history.js, common.js
 ```
 
 Règles :
@@ -174,13 +190,12 @@ Règles :
 Profil, étapes cochées, étapes perso, lien ABC, modules de formation cochés, projets, budget du mois, favoris et capsule.
 
 ### Collections déjà créées
-`life/state/tasks`, `life/state/goals`, `life/state/reviews` (Planning) ; `life/state/tests`, `life/state/sessions` (GRE, Anglais) ; `life/state/milestones`, `life/state/notes`, `life/state/resources` (Projets).
+`life/state/tasks`, `life/state/goals`, `life/state/reviews` (Planning) ; `life/state/tests`, `life/state/sessions` (GRE, Anglais) ; `life/state/milestones`, `life/state/notes`, `life/state/resources` (Projets) ; `life/state/transactions`, `life/state/budgets` (Finance).
 
 ### À créer (collections prévues dans la base claude.ai)
 | Collection | Module |
 |---|---|
 | `events` | Planning (calendrier) |
-| `transactions`, `budgets` (mois archivés) | Finance |
 | `wardrobe`, `outfits` | Style |
 | `activity` (journal horodaté) | Analytics |
 | `ai` (conversations, recommandations) | Assistant IA |

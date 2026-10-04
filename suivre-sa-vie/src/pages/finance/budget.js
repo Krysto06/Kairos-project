@@ -1,14 +1,15 @@
-import { h, focusLater } from '../core/dom.js';
-import { uid } from '../core/utils.js';
-import { money, percent, monthYear } from '../core/format.js';
-import { KINDS, CURRENCIES } from '../data/defaults.js';
-import { budgetSummary, budgetInsight } from '../domain/budget.js';
-import { CARD, BTN_SM, IN, EYEBROW, H3 } from '../ui/classes.js';
-import { pageHeader, statusBadge, notice, field } from '../ui/components.js';
+import { h, focusLater } from '../../core/dom.js';
+import { uid } from '../../core/utils.js';
+import { money, percent } from '../../core/format.js';
+import { KINDS, CURRENCIES } from '../../data/defaults.js';
+import { budgetSummary, budgetInsight } from '../../domain/budget.js';
+import { CARD, BTN_SM, IN, EYEBROW, H3 } from '../../ui/classes.js';
+import { notice, field } from '../../ui/components.js';
 
 const SEG = { besoin: 'bg-edu text-edu-ink', envie: 'bg-sty text-sty-ink', epargne: 'bg-fin text-fin-ink', reste: 'text-muted' };
 
-export default function finance(ctx) {
+/* Budget prévu : modèle mensuel (salaire et postes) comparé à la règle 50/30/20. */
+export default function budget(ctx) {
   const b = ctx.state.budget, fmt = n => money(n, b.currency);
   const chart = h('div', { class: 'grid gap-4' }), insight = h('p', { class: 'mt-6 border-t border-line pt-4 text-sm leading-relaxed' });
   const out = {}, pctCells = {};
@@ -34,7 +35,7 @@ export default function finance(ctx) {
   const kpi = (label, key) => h('div', { class: 'grid gap-1 border-t border-line pt-4 min-w-0' }, h('div', { class: EYEBROW }, label), out[key] = h('div', { class: 'font-display text-[2rem] leading-tight font-semibold tnum' }));
   const kpis = h('div', { class: 'grid gap-x-8 gap-y-6 grid-cols-2 lg:grid-cols-4 mb-10' },
     h('div', { class: 'col-span-2 lg:col-span-1 grid gap-1 border-t-2 border-fin-ink pt-4 min-w-0' },
-      h('label', { class: EYEBROW, for: 'salary' }, 'Salaire net · ' + monthYear(new Date())),
+      h('label', { class: EYEBROW, for: 'salary' }, 'Salaire net prévu'),
       h('input', { id: 'salary', type: 'number', min: 0, step: 10, inputmode: 'decimal', value: b.salary || '', placeholder: '0',
         class: 'w-full bg-transparent font-display text-[2rem] leading-tight font-semibold text-fin-ink tnum border-0 border-b border-dashed border-fin-ink/50 focus:border-solid focus:outline-none p-0',
         oninput: e => { b.salary = +e.target.value || 0; b.example = false; changed(); } })),
@@ -48,19 +49,19 @@ export default function finance(ctx) {
     pctCells[l.id] = h('span', { class: 'hidden sm:block text-right font-mono text-xs text-muted tnum' }),
     h('button', { type: 'button', class: 'hidden sm:block text-muted hover:text-warn cursor-pointer', 'aria-label': 'Supprimer ' + l.label, onclick: () => ctx.update(() => { b.lines = b.lines.filter(x => x.id !== l.id); }) }, '✕')));
 
-  const view = h('div', { class: 'view', 'data-c': 'fin' },
-    pageHeader({ eyebrow: 'Vie & projets', title: 'Finance', lead: 'Ton salaire, ton budget du mois, et la comparaison avec la règle 50/30/20.',
-      badges: [statusBadge('live'), statusBadge('connect', 'Banque : à connecter')],
-      actions: h('div', { class: 'w-32' }, field('cur', 'Devise', h('select', { class: IN + ' cursor-pointer', id: 'cur', onchange: e => ctx.update(() => { b.currency = e.target.value; }) }, CURRENCIES.map(c => h('option', { value: c, selected: b.currency === c }, c))))) }),
+  const view = h('div', {},
+    h('div', { class: 'mb-8 flex flex-wrap items-end justify-between gap-4' },
+      h('p', { class: 'max-w-2xl text-sm text-muted' }, 'Ton budget type pour un mois : ce que tu prévois de gagner et de dépenser par poste. L’onglet Mois le compare à tes transactions réelles.'),
+      h('div', { class: 'w-32' }, field('cur', 'Devise', h('select', { class: IN + ' cursor-pointer', id: 'cur', onchange: e => ctx.update(() => { b.currency = e.target.value; }) }, CURRENCIES.map(c => h('option', { value: c, selected: b.currency === c }, c)))))),
     b.example ? h('div', { class: 'mb-6' }, notice('Chiffres d’exemple. Remplace-les par les tiens : ce message disparaît à ta première modification.', 'gold')) : null,
     kpis,
     h('div', { class: 'grid gap-6 lg:grid-cols-[1fr_1.15fr]' },
       h('div', { class: CARD }, h('h3', { class: H3 + ' mb-5' }, 'Répartition'), chart, insight),
       h('div', { class: CARD },
-        h('div', { class: 'flex items-center justify-between gap-2 mb-3' }, h('h3', { class: H3 }, 'Budget du mois'),
+        h('div', { class: 'flex items-center justify-between gap-2 mb-3' }, h('h3', { class: H3 }, 'Postes du budget'),
           h('button', { type: 'button', class: BTN_SM, onclick: () => { const id = 'l' + uid(); ctx.update(() => { b.lines.push({ id, label: 'Nouveau poste', kind: 'besoin', amount: 0 }); }); focusLater('bl-' + id); } }, '+ Poste')),
         h('div', {}, rows))),
-    h('p', { class: 'mt-6 text-[13px] text-muted' }, 'Saisie manuelle. Un seul budget, celui du mois en cours : l’historique mois par mois et les transactions viendront avec la base de données.'));
+    h('p', { class: 'mt-6 text-[13px] text-muted' }, 'Ce budget sert de modèle pour chaque mois. Quand tu clôtures un mois, une copie est archivée avec les montants réels.'));
   paint();
   return view;
 }

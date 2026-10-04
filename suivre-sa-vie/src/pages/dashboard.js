@@ -4,6 +4,7 @@ import { TRACKS } from '../data/content/tracks.js';
 import { PROJECT_STATUS } from '../data/defaults.js';
 import { trackProgress, allSkillsProgress, nextActions } from '../domain/progress.js';
 import { budgetSummary } from '../domain/budget.js';
+import { monthSummary, txOfMonth } from '../domain/finance.js';
 import { mainProject, projectProgress, nextMilestone } from '../domain/projects.js';
 import { routeOfTrack } from '../config/modules.js';
 import { todayKey, minutesLabel } from '../core/dates.js';
@@ -51,13 +52,15 @@ export default function dashboard(ctx) {
       : emptyState('Aucune action datée d’aujourd’hui. Planifie ta journée depuis le module Planning.'));
 
   const skills = allSkillsProgress(S), bc = budgetSummary(S.budget);
+  const monthTx = txOfMonth(ctx.col('transactions').all(), todayKey().slice(0, 7)), real = monthTx.length ? monthSummary(monthTx, S.budget) : null;
   const metrics = h('div', { class: 'grid gap-x-8 gap-y-8 grid-cols-2 md:grid-cols-3 lg:grid-cols-4' },
     TRACKS.map(tr => { const q = trackProgress(S, tr); return metric({ label: tr.title, value: `${q.d}/${q.n}`, p: q.p, color: 'edu', sub: tr.id === 'en' && S.english.level ? `niveau ${S.english.level} · étapes franchies` : 'étapes franchies', onClick: () => ctx.go(routeOfTrack(tr.id)) }); }),
     (() => { const last = latest(greTests(ctx.col('tests').all())), t = S.gre.target, tgt = t.v != null && t.q != null ? t.v + t.q : null;
       return metric({ label: 'Score GRE', value: total(last) ?? '–', p: total(last) && tgt ? (total(last) - 260) / (tgt - 260) : null, color: 'edu',
         sub: last ? (tgt ? `cible ${tgt}` : 'cible à fixer') : 'aucun test enregistré', onClick: () => { ctx.ui.greTab = 'overview'; ctx.go('gre'); } }); })(),
     metric({ label: 'Compétences', value: `${skills.d}/${skills.n}`, p: skills.p, color: 'sk', sub: 'modules terminés', onClick: () => ctx.go('skills') }),
-    metric({ label: 'Taux d’épargne', value: bc.sal ? percent(bc.saveRate) : '–', p: bc.sal ? bc.saveRate / 0.2 : null, color: 'fin', sub: bc.sal ? 'objectif : 20 %' : 'salaire non renseigné', onClick: () => ctx.go('finance') }),
+    real && real.base ? metric({ label: 'Épargne réelle du mois', value: percent(real.saveRate), p: real.saveRate / 0.2, color: 'fin', sub: 'objectif : 20 %', onClick: () => ctx.go('finance') })
+      : metric({ label: 'Taux d’épargne prévu', value: bc.sal ? percent(bc.saveRate) : '–', p: bc.sal ? bc.saveRate / 0.2 : null, color: 'fin', sub: bc.sal ? 'objectif : 20 %' : 'salaire non renseigné', onClick: () => ctx.go('finance') }),
     metric({ label: 'Projets en cours', value: S.projects.filter(x => x.status === 'cours').length, color: 'pro', sub: `${S.projects.length} au total`, onClick: () => ctx.go('projects') }));
 
   const nexts = nextActions(S, routeOfTrack);
