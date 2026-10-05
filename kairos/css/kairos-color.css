@@ -1,0 +1,27 @@
+/* Kairos : passe couleur — fond blanc, mais des teintes franches par domaine de vie */
+:root, :root[data-theme="light"]{
+  --bg:255 255 255; --surface:255 255 255; --ink:24 24 48; --muted:92 98 124; --line:226 228 244; --soft:236 238 252;
+  --me:190 242 234; --me-ink:13 124 114;
+  --edu:196 220 255; --edu-ink:37 99 235;
+  --fin:186 242 206; --fin-ink:21 128 61;
+  --sk:222 208 255; --sk-ink:124 58 237;
+  --sty:255 204 224; --sty-ink:219 39 119;
+  --pro:255 226 160; --pro-ink:194 94 6;
+  --gold:234 160 8; --warn:220 38 38; --btn:30 27 75; --btnink:255 255 255; --glow:.9;
+}
+body{
+  background:
+    radial-gradient(900px 520px at 6% -4%, rgb(var(--sk) / .8), transparent 62%),
+    radial-gradient(800px 480px at 98% 2%, rgb(var(--sty) / .75), transparent 62%),
+    radial-gradient(1000px 620px at 50% 108%, rgb(var(--me) / .85), transparent 62%),
+    #ffffff !important;
+  background-attachment: fixed;
+}
+/* Onglets : l’onglet actif prend la couleur de son domaine */
+button[role="tab"][aria-selected="true"]{ background:rgb(var(--ci)) !important; color:#fff !important; box-shadow:0 8px 18px -8px rgb(var(--ci) / .7); }
+button[role="tab"][aria-selected="true"] > span{ background:#fff !important; }
+button[role="tab"][aria-selected="false"]:hover{ background:rgb(var(--c)) !important; color:rgb(var(--ci)); }
+/* Anneaux de progression et barres plus lisibles */
+[data-c] svg circle:first-of-type{ stroke:rgb(var(--ci) / .2); }
+[data-c] [role="progressbar"]{ background:rgb(var(--ci) / .15); }
+[data-c] [role="progressbar"] > div{ background:linear-gradient(90deg, rgb(var(--ci)), rgb(var(--ci) / .65)); }

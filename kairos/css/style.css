@@ -35,3 +35,6 @@ h1,h2,h3,h4{text-wrap:balance}
 .chk:checked{background:rgb(var(--ci));border-color:rgb(var(--ci))}
 .chk:checked::after{content:"";width:5px;height:10px;border:solid rgb(var(--surface));border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
 .no-scrollbar{scrollbar-width:none}.no-scrollbar::-webkit-scrollbar{display:none}
+
+/* Theme frais : fond blanc */
+:root{--bg:255 255 255;--surface:255 255 255;--ink:15 23 42;--muted:100 116 139;--line:226 232 240;--me:204 251 241;--me-ink:15 118 110;--edu:224 242 254;--edu-ink:3 105 161;--sk:237 233 254;--sk-ink:109 40 217;--sty:255 228 230;--sty-ink:190 18 60;--btn:13 148 136;--btnink:255 255 255;--glow:.35}

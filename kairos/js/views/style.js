@@ -1,4 +1,4 @@
-function vStyle(){
+function vStyleBase(){
   const heart='<svg viewBox="0 0 24 24" class="h-[18px] w-[18px]" aria-hidden="true"><path d="M12 20s-7-4.4-9.2-8.6C1.3 8.3 3.2 5 6.4 5c2 0 3.3 1.1 4 2.3h3.2C14.3 6.1 15.6 5 17.6 5c3.2 0 5.1 3.3 3.6 6.4C19 15.6 12 20 12 20z" stroke-width="2" stroke="currentColor" fill="var(--hf,none)"/></svg>';
   const favFirst=LOOKS.slice().sort((a,b)=>(S.favs.includes(b.id)?1:0)-(S.favs.includes(a.id)?1:0));
   return h('section',{class:'view','data-c':'sty'},
@@ -22,3 +22,10 @@ function vStyle(){
         h('input',{type:'checkbox',class:'chk',id:'cap-'+i,checked:on,onchange:e=>{S.capsule=e.target.checked?S.capsule.concat(c):S.capsule.filter(x=>x!==c);save();render();}}),c);}))));
 }
 
+function vStyle(){
+  const base=vStyleBase();
+  base.append(
+    h('div',{class:'mt-8 mb-4'},h('h3',{class:'font-display text-2xl font-extrabold'},'Mes projets habits'),h('p',{class:'text-sm text-muted'},'Les pièces à acheter, avec les boutiques prévues. Coche ce que tu as déjà, ajoute ce qui manque.')),
+    h('div',{class:'grid gap-5 lg:grid-cols-2'},vList('wd-day'),vList('wd-work'),vList('wd-norah')));
+  return base;
+}

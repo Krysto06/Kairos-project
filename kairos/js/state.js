@@ -4,24 +4,24 @@ const STATUS = {idee:'Idée',cours:'En cours',pause:'En pause',fini:'Terminé'};
 const STATUS_C = {idee:'me',cours:'edu',pause:'pro',fini:'fin'};
 const DEFAULT = {
   profile:{name:'Krystofia',headline:'',education:'',children:'',status:'',city:'',languages:'',motto:''},
-  done:[], custom:{}, abcLink:'', skillsDone:[], favs:[], capsule:[], projects:[],
-  budget:{salary:0,currency:'€',example:false,lines:[
+  done:[], custom:{}, family:{members:[],dates:[]}, lists:{}, events:[], abcLink:'', skillsDone:[], favs:[], capsule:[], projects:[],
+  budget:{salary:0,currency:'$',example:false,tx:[],bills:[],goal:{label:'',target:0},lines:[
     {id:'l1',label:'Logement',kind:'besoin',amount:0},{id:'l2',label:'Alimentation',kind:'besoin',amount:0},
     {id:'l3',label:'Transport',kind:'besoin',amount:0},{id:'l4',label:'Enfants & famille',kind:'besoin',amount:0},
     {id:'l5',label:'Loisirs & sorties',kind:'envie',amount:0},{id:'l6',label:'Style & shopping',kind:'envie',amount:0},
-    {id:'l7',label:'Formations (CFA, TOEFL, GRE)',kind:'epargne',amount:0},{id:'l8',label:'Épargne de précaution',kind:'epargne',amount:0},
+    {id:'l7',label:'Formations (FMVA, TOEFL, GRE)',kind:'epargne',amount:0},{id:'l8',label:'Épargne de précaution',kind:'epargne',amount:0},
     {id:'l9',label:'Investissement',kind:'epargne',amount:0}]}
 };
 
 /* ---------- Classes réutilisées ---------- */
-const CARD='rounded-3xl bg-surface/80 backdrop-blur-xl ring-1 ring-line/80 shadow-soft p-5 sm:p-6 min-w-0';
-const BTN='inline-flex items-center justify-center gap-1.5 rounded-xl bg-btn text-btnink px-4 py-2.5 text-sm font-semibold shadow-soft hover:opacity-90 active:scale-[.98] transition cursor-pointer';
-const BTN_SM='inline-flex items-center justify-center gap-1.5 rounded-xl bg-btn text-btnink px-3 py-1.5 text-[13px] font-semibold hover:opacity-90 active:scale-[.98] transition cursor-pointer';
+const CARD='rounded-3xl bg-surface ring-1 ring-line shadow-soft p-5 sm:p-6 min-w-0 border-t-4 border-ci/70';
+const BTN='inline-flex items-center justify-center gap-1.5 rounded-xl bg-ci text-white px-4 py-2.5 text-sm font-semibold shadow-soft hover:opacity-90 active:scale-[.98] transition cursor-pointer';
+const BTN_SM='inline-flex items-center justify-center gap-1.5 rounded-xl bg-ci text-white px-3 py-1.5 text-[13px] font-semibold hover:opacity-90 active:scale-[.98] transition cursor-pointer';
 const GHOST='inline-flex items-center justify-center gap-1.5 rounded-xl ring-1 ring-line bg-surface/70 px-3 py-1.5 text-[13px] font-semibold hover:ring-ci hover:text-ci transition cursor-pointer no-underline';
 const IN='w-full min-w-0 rounded-xl bg-soft/80 px-3 py-2.5 text-sm ring-1 ring-transparent focus:bg-surface focus:ring-2 focus:ring-ci/60 focus:outline-none transition placeholder:text-muted/70';
 const LABEL='text-xs font-semibold text-muted';
 const EYEBROW='text-[11px] font-bold uppercase tracking-[.1em] text-muted';
-const H2='font-display font-extrabold text-3xl sm:text-4xl tracking-tight';
+const H2='font-display font-extrabold text-3xl sm:text-4xl tracking-tight text-ci';
 const LINKCHIP='inline-flex items-center gap-1 rounded-lg bg-soft px-2.5 py-1 text-xs font-semibold text-ink no-underline ring-1 ring-transparent hover:ring-ci hover:text-ci transition';
 
 /* ---------- Utilitaires ---------- */
@@ -67,6 +67,16 @@ function hydrate(d){
   b.budget = Object.assign(clone(DEFAULT.budget), (d&&d.budget)||{});
   for (const k of ['done','skillsDone','favs','capsule','projects']) if (!Array.isArray(b[k])) b[k]=[];
   if (!b.custom || typeof b.custom!=='object') b.custom={};
+  if (!(d && d.budget && d.budget.curSet)) b.budget.currency='$';
+  b.budget.curSet=true;
+  if (!Array.isArray(b.budget.tx)) b.budget.tx=[];
+  if (!b.budget.goal || typeof b.budget.goal!=='object') b.budget.goal={label:'',target:0};
+  b.family = Object.assign({members:[],dates:[]}, (d&&d.family)||{});
+  if (!Array.isArray(b.family.members)) b.family.members=[];
+  if (!Array.isArray(b.family.dates)) b.family.dates=[];
+  b.lists = seedLists(b.lists);
+  if (!Array.isArray(b.budget.bills)) b.budget.bills=[];
+  if (!Array.isArray(b.events)) b.events=[];
   return b;
 }
 function setSave(s, txt){
