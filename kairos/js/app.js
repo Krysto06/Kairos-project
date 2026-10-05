@@ -10,19 +10,24 @@ function go(tab, track){ UI.tab=tab; if (track){ UI.track=track; lsSet('ssv.trac
 /* ---------- Démarrage ---------- */
 $('#today').textContent = new Intl.DateTimeFormat('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date());
 { const hash=(location.hash||'').slice(1), t=lsGet('ssv.tab'), ids=TABS.map(x=>x[0]); UI.tab=ids.includes(hash)?hash:(ids.includes(t)?t:'moi'); }
-try{ const c=lsGet('ssv.cache'); S=hydrate(c?JSON.parse(c):S); }catch(e){}
-render();
-(async()=>{
-  const db = window.claude && window.claude.use ? await window.claude.use('db').catch(()=>null) : null;
-  if (!db){ setSave('idle','Enregistré sur cet appareil'); return; }
-  docRef = db.doc('life/state');
-  setSave('idle','Synchronisation…');
-  docRef.onSnapshot(snap=>{
-    if (snap.metadata.hasPendingWrites) return;
-    if (snap.exists){
-      const d=snap.data(), j=stable(d);
-      if (j!==lastJSON && !busy()){ lastJSON=j; S=hydrate(clone(d)); lsSet('ssv.cache',JSON.stringify(S)); render(); }
-    }
-    setSave('saved','Synchronisé');
-  }, ()=>setSave('error','Synchronisation interrompue. Recharge la page.'));
-})();
+function boot(auth){
+  const uid = auth && auth.user ? auth.user.uid : null;
+  try{ if (uid){ const old=lsGet('ssv.uid'); if (old && old!==uid) localStorage.removeItem('ssv.cache'); lsSet('ssv.uid',uid); } }catch(e){}
+  try{ const c=lsGet('ssv.cache'); S=hydrate(c?JSON.parse(c):S); }catch(e){}
+  render();
+  (async()=>{
+    const db = uid ? auth.db : (window.claude && window.claude.use ? await window.claude.use('db').catch(()=>null) : null);
+    if (!db){ setSave('idle','Enregistré sur cet appareil'); return; }
+    docRef = db.doc('life/state');
+    setSave('idle','Synchronisation…');
+    docRef.onSnapshot(snap=>{
+      if (snap.metadata.hasPendingWrites) return;
+      if (snap.exists){
+        const d=snap.data(), j=stable(d);
+        if (j!==lastJSON && !busy()){ lastJSON=j; S=hydrate(clone(d)); lsSet('ssv.cache',JSON.stringify(S)); render(); }
+      } else if (uid && !snap.metadata.fromCache){ save(); }
+      setSave('saved','Synchronisé');
+    }, ()=>setSave('error','Synchronisation interrompue. Recharge la page.'));
+  })();
+}
+Auth.start().then(boot);
