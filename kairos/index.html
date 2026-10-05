@@ -1,0 +1,41 @@
+<title>Kairos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script src="js/tailwind-config.js"></script>
+
+<div class="halo" style="width:420px;height:420px;background:rgb(var(--edu));top:-120px;left:-120px"></div>
+<div class="halo" style="width:380px;height:380px;background:rgb(var(--sty));top:40px;right:-140px"></div>
+<div class="halo" style="width:460px;height:460px;background:rgb(var(--fin));bottom:-200px;left:30%"></div>
+
+<div class="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 pt-6 pb-20">
+  <header class="flex flex-wrap items-end justify-between gap-4 mb-5">
+    <div>
+      <p id="today" class="text-[11.5px] font-bold uppercase tracking-[.12em] text-muted"></p>
+      <h1 class="font-display font-extrabold text-[40px] sm:text-6xl leading-[1.02] tracking-tight mt-1">
+        Suivre sa <span class="bg-gradient-to-r from-edu-ink via-sk-ink to-sty-ink bg-clip-text text-transparent">vie</span>
+      </h1>
+      <p id="greet" class="mt-2 text-muted max-w-xl">Ton tableau de bord personnel.</p>
+    </div>
+    <span id="save" data-s="idle" class="inline-flex items-center gap-2 rounded-full bg-surface/70 backdrop-blur px-3.5 py-1.5 text-xs text-muted ring-1 ring-line">
+      <i class="h-2 w-2 rounded-full bg-muted"></i><span>Chargement…</span>
+    </span>
+  </header>
+
+  <nav id="tabs" class="sticky z-20 -mx-4 sm:mx-0 mb-6 px-4 sm:px-2 py-2 sm:rounded-2xl bg-bg/70 sm:bg-surface/60 backdrop-blur-xl sm:ring-1 sm:ring-line/70 flex gap-1.5 overflow-x-auto no-scrollbar" style="top:env(safe-area-inset-top,0px)" role="tablist" aria-label="Sections"></nav>
+
+  <main id="main"></main>
+  <footer class="mt-12 text-center text-xs text-muted">Kairos · tes coches et tes chiffres sont enregistrés automatiquement.</footer>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/state.js"></script>
+<script src="js/views/moi.js"></script>
+<script src="js/views/education.js"></script>
+<script src="js/views/finance.js"></script>
+<script src="js/views/skills.js"></script>
+<script src="js/views/style.js"></script>
+<script src="js/views/projets.js"></script>
+<script src="js/app.js"></script>

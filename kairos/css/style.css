@@ -1,0 +1,37 @@
+/* Layout: journal de vie en onglets — fond porcelaine avec halos pastel, cartes en verre dépoli, une couleur par domaine de vie. Couleurs en canaux RGB pour les opacités Tailwind. */
+:root{
+  --bg:246 247 251; --surface:255 255 255; --ink:27 32 48; --muted:100 107 128; --line:227 230 239; --soft:238 240 246;
+  --me:227 243 245; --me-ink:14 111 125; --edu:220 234 254; --edu-ink:31 95 184; --fin:216 242 228; --fin-ink:23 119 74;
+  --sk:234 226 253; --sk-ink:106 67 194; --sty:252 227 234; --sty-ink:178 56 91; --pro:255 240 199; --pro-ink:138 98 0;
+  --gold:201 154 46; --warn:194 65 12; --btn:27 32 48; --btnink:255 255 255; --glow:.55;
+  --c:var(--me); --ci:var(--me-ink);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:16 18 25; --surface:26 29 38; --ink:236 238 245; --muted:154 160 180; --line:46 50 64; --soft:36 39 50;
+  --me:21 48 47; --me-ink:127 211 222; --edu:28 42 66; --edu-ink:141 184 255; --fin:22 50 42; --fin-ink:125 219 168;
+  --sk:42 35 66; --sk-ink:195 168 255; --sty:58 31 41; --sty-ink:255 157 184; --pro:58 48 22; --pro-ink:241 197 91;
+  --gold:227 185 79; --warn:251 146 60; --btn:236 238 245; --btnink:18 20 27; --glow:.35; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:16 18 25; --surface:26 29 38; --ink:236 238 245; --muted:154 160 180; --line:46 50 64; --soft:36 39 50;
+  --me:21 48 47; --me-ink:127 211 222; --edu:28 42 66; --edu-ink:141 184 255; --fin:22 50 42; --fin-ink:125 219 168;
+  --sk:42 35 66; --sk-ink:195 168 255; --sty:58 31 41; --sty-ink:255 157 184; --pro:58 48 22; --pro-ink:241 197 91;
+  --gold:227 185 79; --warn:251 146 60; --btn:236 238 245; --btnink:18 20 27; --glow:.35; color-scheme:dark;
+}
+[data-c="me"]{--c:var(--me);--ci:var(--me-ink)} [data-c="edu"]{--c:var(--edu);--ci:var(--edu-ink)}
+[data-c="fin"]{--c:var(--fin);--ci:var(--fin-ink)} [data-c="sk"]{--c:var(--sk);--ci:var(--sk-ink)}
+[data-c="sty"]{--c:var(--sty);--ci:var(--sty-ink)} [data-c="pro"]{--c:var(--pro);--ci:var(--pro-ink)}
+html,body{background:rgb(var(--bg));color:rgb(var(--ink))}
+body{font-family:'Figtree',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased;margin:0;overflow-x:hidden}
+h1,h2,h3,h4{text-wrap:balance}
+:focus-visible{outline:2px solid rgb(var(--edu-ink));outline-offset:2px}
+.halo{position:fixed;border-radius:9999px;filter:blur(80px);opacity:var(--glow);pointer-events:none;z-index:0}
+.view{animation:rise .4s cubic-bezier(.2,.7,.2,1) both}
+@keyframes rise{from{transform:translateY(8px);opacity:.3}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.view{animation:none}*{transition:none!important}}
+.path{position:relative}
+.path::before{content:"";position:absolute;left:21px;top:14px;bottom:14px;width:2px;background:repeating-linear-gradient(rgb(var(--line)) 0 6px,transparent 6px 11px)}
+.chk{appearance:none;width:20px;height:20px;flex:none;border:2px solid rgb(var(--line));border-radius:7px;display:grid;place-items:center;background:rgb(var(--surface));cursor:pointer;transition:all .15s}
+.chk:checked{background:rgb(var(--ci));border-color:rgb(var(--ci))}
+.chk:checked::after{content:"";width:5px;height:10px;border:solid rgb(var(--surface));border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.no-scrollbar{scrollbar-width:none}.no-scrollbar::-webkit-scrollbar{display:none}
