@@ -4,4 +4,4 @@
 const SUPABASE_URL = "https://eacrxvxrylxrwzyrarou.supabase.co";
 const SUPABASE_KEY = "sb_publishable_AEm8LgFx62Z4gekl_lJQwA_-JfutR0j";
 /* true = le bouton « Créer mon compte » est visible. Mets false une fois ton compte créé. */
-const ALLOW_SIGNUP = true;
+const ALLOW_SIGNUP = false;
