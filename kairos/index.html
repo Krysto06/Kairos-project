@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang=fr data-theme=light>
+<html lang=fr>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
@@ -11,11 +11,14 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <title>Kairos</title>
+<script>
+/* Thème choisi : appliqué avant l'affichage pour éviter un flash. Sans choix, le thème suit l'appareil. */
+try{ var t=localStorage.getItem('kairos.theme'); if(t==='light'||t==='dark') document.documentElement.setAttribute('data-theme',t); }catch(e){}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
-<link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="css/kairos-color.css">
+<link rel="stylesheet" href="css/kairos.css">
 <script src="https://cdn.tailwindcss.com/3.4.16"></script>
 <script src="js/tailwind-config.js"></script>
 
@@ -32,48 +35,65 @@
       </h1>
       <p id="greet" class="mt-2 text-muted max-w-xl">Ton tableau de bord personnel.</p>
     </div>
-    <span id="save" data-s="idle" class="inline-flex items-center gap-2 rounded-full bg-surface/70 backdrop-blur px-3.5 py-1.5 text-xs text-muted ring-1 ring-line">
-      <i class="h-2 w-2 rounded-full bg-muted"></i><span>Chargement…</span>
-    </span>
+    <div id="hdr-actions" class="flex flex-wrap items-center gap-2">
+      <button id="theme-btn" type="button" class="inline-flex items-center gap-1.5 rounded-full bg-surface/70 backdrop-blur px-3.5 py-1.5 text-xs font-semibold text-muted ring-1 ring-line hover:text-ink cursor-pointer" aria-label="Changer le thème"></button>
+      <span id="save" data-s="idle" class="inline-flex items-center gap-2 rounded-full bg-surface/70 backdrop-blur px-3.5 py-1.5 text-xs text-muted ring-1 ring-line">
+        <i class="h-2 w-2 rounded-full bg-muted"></i><span>Chargement…</span>
+      </span>
+    </div>
   </header>
 
-  <nav id="tabs" class="sticky z-20 -mx-4 sm:mx-0 mb-6 px-4 sm:px-2 py-2 sm:rounded-2xl bg-bg/70 sm:bg-surface/60 backdrop-blur-xl sm:ring-1 sm:ring-line/70 flex gap-1.5 overflow-x-auto no-scrollbar" style="top:env(safe-area-inset-top,0px)" role="tablist" aria-label="Sections"></nav>
+  <nav id="tabs" class="sticky z-20 -mx-4 sm:mx-0 mb-6 px-4 sm:px-2 py-2 sm:rounded-2xl bg-bg/80 sm:bg-surface/70 backdrop-blur-xl sm:ring-1 sm:ring-line/70 flex gap-1.5 overflow-x-auto no-scrollbar" style="top:env(safe-area-inset-top,0px)" role="tablist" aria-label="Sections"></nav>
 
   <main id="main"></main>
   <footer class="mt-12 text-center text-xs text-muted">Kairos · tes coches et tes chiffres sont enregistrés automatiquement.</footer>
 </div>
 
+<!-- Parcours et contenus génériques (modèles que chaque personne peut ajouter) -->
 <script src="js/tracks/en.js"></script>
 <script src="js/tracks/toefl.js"></script>
-<script src="js/tracks/lic.js"></script>
+<script src="js/tracks/es.js"></script>
 <script src="js/tracks/gre.js"></script>
 <script src="js/skills/py.js"></script>
 <script src="js/skills/sql.js"></script>
 <script src="js/skills/linux.js"></script>
 <script src="js/skills/da.js"></script>
 <script src="js/skills/fa.js"></script>
-<script src="js/tracks/es.js"></script>
 <script src="js/skills/git.js"></script>
 <script src="js/skills/excel.js"></script>
 <script src="js/skills/powerbi.js"></script>
 <script src="js/skills/stats.js"></script>
 <script src="js/skills/dataviz.js"></script>
 <script src="js/skills/fmva.js"></script>
-<script src="js/data-lists.js"></script>
+<script src="js/data/masters.js"></script>
+<script src="js/data/sport.js"></script>
+<script src="js/data/spirit.js"></script>
+<script src="js/data/lists.js"></script>
+<!-- Données du compte d'origine, utilisées une seule fois pour migrer l'ancien format (peut être supprimé ensuite) -->
+<script src="js/legacy/lic.js"></script>
+<script src="js/legacy/krystofia.js"></script>
 <script src="js/data.js"></script>
-<script src="js/state.js"></script>
-<script src="js/views/moi.js"></script>
-<script src="js/views/education.js"></script>
-<script src="js/views/finance.js"></script>
-<script src="js/views/skills.js"></script>
-<script src="js/views/style.js"></script>
-<script src="js/views/projets.js"></script>
-<script src="js/views/lists.js"></script>
-<script src="js/views/famille.js"></script>
-<script src="js/views/perso.js"></script>
+
+<script src="js/core.js"></script>
+<script src="js/migrate.js"></script>
+<script src="js/ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="js/pdf.js"></script>
+<script src="js/agenda.js"></script>
 <script src="js/views/coach.js"></script>
-<script src="js/views/backup.js"></script>
+<script src="js/views/accueil.js"></script>
+<script src="js/views/famille.js"></script>
+<script src="js/views/projets.js"></script>
+<script src="js/views/perso.js"></script>
+<script src="js/views/langues.js"></script>
+<script src="js/views/diplomes.js"></script>
+<script src="js/views/skills.js"></script>
+<script src="js/views/finance.js"></script>
+<script src="js/views/style.js"></script>
+<script src="js/views/sport.js"></script>
+<script src="js/views/spirit.js"></script>
 <script src="js/views/calendrier.js"></script>
+<script src="js/views/backup.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-config.js"></script>
 <script src="js/auth.js"></script>
